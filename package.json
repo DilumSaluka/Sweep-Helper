@@ -1,0 +1,63 @@
+{
+  "name": "sweep-helper",
+  "version": "1.0.0",
+  "description": "Your friendly PC cleaner — sweep junk away in one click",
+  "main": "electron/main.js",
+  "author": {
+    "name": "Dilum Saluka",
+    "email": "dilumsaluka@gmail.com"
+  },
+  "license": "MIT",
+  "scripts": {
+    "dev:renderer": "vite",
+    "dev:electron": "wait-on http://localhost:5173 && cross-env DEV_MODE=true electron .",
+    "dev": "concurrently -n renderer,electron \"npm run dev:renderer\" \"npm run dev:electron\"",
+    "build": "vite build && electron-builder",
+    "build:dir": "vite build && electron-builder --dir",
+    "preview": "vite build && electron ."
+  },
+  "build": {
+    "appId": "com.dilumsaluka.sweephelper",
+    "productName": "Sweep Helper",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "assets/**/*"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "assets/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "installerIcon": "assets/icon.png",
+      "uninstallerIcon": "assets/icon.png"
+    }
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.0",
+    "autoprefixer": "^10.4.0",
+    "concurrently": "^9.1.0",
+    "cross-env": "^7.0.0",
+    "electron": "^33.0.0",
+    "electron-builder": "^26.15.3",
+    "postcss": "^8.4.0",
+    "tailwindcss": "^3.4.0",
+    "vite": "^6.0.0",
+    "wait-on": "^8.0.0"
+  },
+  "dependencies": {
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0"
+  }
+}
