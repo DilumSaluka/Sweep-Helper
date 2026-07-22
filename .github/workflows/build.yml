@@ -25,7 +25,7 @@ jobs:
         run: npm run build
 
       - name: Create portable zip
-        run: $ver = "${{ github.ref_name }}" -replace '^v', ''; Compress-Archive -Path "release\win-unpacked\*" -DestinationPath "release\Sweep-Helper-Portable-$ver.zip" -Force
+        run: $ver = (Get-Content package.json | ConvertFrom-Json).version; Compress-Archive -Path "release\win-unpacked\*" -DestinationPath "release\Sweep-Helper-Portable-$ver.zip" -Force
 
       - name: Upload installer
         uses: actions/upload-artifact@v4
