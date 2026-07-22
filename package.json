@@ -12,7 +12,7 @@
     "dev:renderer": "vite",
     "dev:electron": "wait-on http://localhost:5173 && cross-env DEV_MODE=true electron .",
     "dev": "concurrently -n renderer,electron \"npm run dev:renderer\" \"npm run dev:electron\"",
-    "build": "vite build && electron-builder --win",
+    "build": "vite build && electron-builder --win --publish never",
     "build:dir": "vite build && electron-builder --dir",
     "preview": "vite build && electron ."
   },
