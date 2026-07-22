@@ -1,4 +1,4 @@
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![Latest Release](https://img.shields.io/github/v/release/DilumSaluka/Sweep-Helper?label=version)](https://github.com/DilumSaluka/Sweep-Helper/releases) [![Build EXE](https://github.com/DilumSaluka/Sweep-Helper/actions/workflows/build.yml/badge.svg)](https://github.com/DilumSaluka/Sweep-Helper/actions/workflows/build.yml) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)](CONTRIBUTING.md)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![Latest Release](https://img.shields.io/github/v/release/DilumSaluka/Sweep-Helper?label=version)](https://github.com/DilumSaluka/Sweep-Helper/releases) [![Build EXE](https://github.com/DilumSaluka/Sweep-Helper/actions/workflows/build.yml/badge.svg)](https://github.com/DilumSaluka/Sweep-Helper/actions/workflows/build.yml) [![Code of Conduct](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa)](CODE_OF_CONDUCT.md) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)](CONTRIBUTING.md)
 
 # 🧹 Sweep Helper
 
@@ -12,11 +12,14 @@ Created by **[Dilum Saluka](https://github.com/DilumSaluka)**.
 
 ## 📥 Download
 
+Get the latest installer from the **[Releases page](https://github.com/DilumSaluka/Sweep-Helper/releases)**.
+
 | Version | Download | Size |
 |---------|----------|------|
-| v1.0 | [Sweep-Helper-Setup-1.0.0.exe](https://github.com/DilumSaluka/Sweep-Helper/releases/download/v1.0/Sweep-Helper-Setup-1.0.0.exe) | ~70 MB |
+| v1.0 | [Sweep Helper Setup 1.0.0.exe](https://github.com/DilumSaluka/Sweep-Helper/releases/download/v1.0/Sweep.Helper.Setup.1.0.0.exe) | ~77 MB |
+| v1.0 (portable) | [Sweep-Helper-Portable-1.0.0.zip](https://github.com/DilumSaluka/Sweep-Helper/releases/download/v1.0/Sweep-Helper-Portable-1.0.0.zip) | ~77 MB |
 
-> Windows 10/11 only. The installer is code-signed and safe.
+> Windows 10/11 only. No admin required for portable version.
 
 ---
 

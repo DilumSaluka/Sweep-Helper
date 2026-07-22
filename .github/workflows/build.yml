@@ -22,14 +22,21 @@ jobs:
       - name: Build installer
         run: npm run build
 
+      - name: Create portable zip
+        run: Compress-Archive -Path "release\win-unpacked\*" -DestinationPath "release\Sweep-Helper-Portable-${{ github.ref_name }}.zip" -Force
+
       - name: Upload installer
         uses: actions/upload-artifact@v4
         with:
           name: Sweep-Helper-Installer
-          path: release/*.exe
+          path: |
+            release/*.exe
+            release/*.zip
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          files: release/*.exe
+          files: |
+            release/*.exe
+            release/*.zip
           generate_release_notes: true
