@@ -84,8 +84,12 @@ ipcMain.handle('safe-bin:exists', async () => {
   return safeBin.hasRestorableItems()
 })
 
-ipcMain.handle('files:scan', async () => {
-  return largeFileFinder.scan()
+ipcMain.handle('files:drives', async () => {
+  return largeFileFinder.listDrives()
+})
+
+ipcMain.handle('files:scan', async (_event, driveRoot) => {
+  return largeFileFinder.scan(driveRoot)
 })
 
 ipcMain.handle('files:delete', async (_event, paths) => {

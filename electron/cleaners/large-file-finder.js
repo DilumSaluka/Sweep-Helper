@@ -2,35 +2,38 @@ const { execFile } = require('child_process')
 
 const POWER_SHELL = process.env.SystemRoot + '\\System32\\WindowsPowerShell\\v1.0\\powershell.exe'
 
-async function scan() {
-  const script = `
-    $dirs = @(
-      [Environment]::GetFolderPath('Desktop'),
-      [Environment]::GetFolderPath('MyDocuments'),
-      [Environment]::GetFolderPath('MyPictures'),
-      [Environment]::GetFolderPath('MyMusic'),
-      [Environment]::GetFolderPath('MyVideos'),
-      [Environment]::GetFolderPath('UserProfile') + '\\Downloads'
-    )
-    $results = @()
-    foreach ($dir in $dirs) {
-      if (-not (Test-Path $dir)) { continue }
+async function listDrives() {
+  const script = `Get-PSDrive -PSProvider FileSystem | Where-Object { $_.Used -gt 0 } | ForEach-Object { [PSCustomObject]@{ Root = $_.Root; Used = $_.Used; Free = $_.Free } } | ConvertTo-Json -Compress`
+  return new Promise((resolve) => {
+    const child = execFile(POWER_SHELL, ['-NoProfile', '-Command', script], { maxBuffer: 1024 * 1024, timeout: 10000 }, (err, stdout) => {
+      if (err) { resolve([]); return }
       try {
-        Get-ChildItem -Path $dir -Recurse -File -ErrorAction Stop -Depth 4 | Where-Object { $_.Length -gt 104857600 } | ForEach-Object {
-          [PSCustomObject]@{ FullName = $_.FullName; Length = $_.Length; LastWrite = $_.LastWriteTime.ToString('yyyy-MM-dd') }
-        }
-      } catch {}
-    }
-    $root = [Environment]::GetFolderPath('SystemDrive')
+        const data = JSON.parse(stdout.trim())
+        if (!data) { resolve([]); return }
+        const arr = Array.isArray(data) ? data : [data]
+        resolve(arr.map(d => ({
+          root: d.Root.replace('\\', ''),
+          used: d.Used,
+          free: d.Free
+        })))
+      } catch { resolve([]) }
+    })
+  })
+}
+
+async function scan(driveRoot) {
+  const script = `
+    $root = '${driveRoot.replace(/\\/g, '\\\\')}'
+    $results = @()
     try {
-      Get-ChildItem -Path $root -File -ErrorAction Stop | Where-Object { $_.Length -gt 104857600 } | ForEach-Object {
+      Get-ChildItem -Path $root -Recurse -File -ErrorAction SilentlyContinue -Depth 6 | Where-Object { $_.Length -gt 104857600 } | ForEach-Object {
         [PSCustomObject]@{ FullName = $_.FullName; Length = $_.Length; LastWrite = $_.LastWriteTime.ToString('yyyy-MM-dd') }
       }
     } catch {}
     $results | Sort-Object Length -Descending | ConvertTo-Json -Compress
   `
   return new Promise((resolve) => {
-    const child = execFile(POWER_SHELL, ['-NoProfile', '-Command', script], { maxBuffer: 50 * 1024 * 1024, timeout: 60000 }, (err, stdout) => {
+    const child = execFile(POWER_SHELL, ['-NoProfile', '-Command', script], { maxBuffer: 100 * 1024 * 1024, timeout: 120000 }, (err, stdout) => {
       if (err) { resolve([]); return }
       try {
         const data = JSON.parse(stdout.trim())
@@ -68,4 +71,4 @@ async function deleteFiles(filePaths) {
   })
 }
 
-module.exports = { scan, deleteFiles }
+module.exports = { listDrives, scan, deleteFiles }
