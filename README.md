@@ -4,7 +4,7 @@
 
 **Clean your PC in one click. No ads. No telemetry. No bloat.**
 
-Sweep Helper is a free, open-source Windows cleaner that removes temporary files, browser cache, and Recycle Bin junk — all from a beautiful, friendly interface. No confusing settings, no upgrade popups, just one big button.
+Sweep Helper is a free, open-source Windows cleaner that removes temporary files, browser cache, and Recycle Bin junk — all from a beautiful, friendly interface. No confusing settings, no upgrade popups, just one big button. Also includes an **app uninstaller** and **large file finder**.
 
 Created by **[Dilum Saluka](https://github.com/DilumSaluka)**.
 
@@ -16,8 +16,9 @@ Get the latest installer from the **[Releases page](https://github.com/DilumSalu
 
 | Version | Download | Size |
 |---------|----------|------|
-| v1.0 | [Sweep Helper Setup 1.0.0.exe](https://github.com/DilumSaluka/Sweep-Helper/releases/download/v1.0/Sweep.Helper.Setup.1.0.0.exe) | ~77 MB |
-| v1.0 (portable) | [Sweep-Helper-Portable-1.0.0.zip](https://github.com/DilumSaluka/Sweep-Helper/releases/download/v1.0/Sweep-Helper-Portable-1.0.0.zip) | ~77 MB |
+| **v1.1 (latest)** | [Sweep Helper Setup 1.0.0.exe](https://github.com/DilumSaluka/Sweep-Helper/releases/download/v1.1/Sweep.Helper.Setup.1.0.0.exe) | ~77 MB |
+| **v1.1 (portable)** | [Sweep-Helper-Portable-1.0.0.zip](https://github.com/DilumSaluka/Sweep-Helper/releases/download/v1.1/Sweep-Helper-Portable-1.0.0.zip) | ~77 MB |
+| v1.0 | [Release page](https://github.com/DilumSaluka/Sweep-Helper/releases/tag/v1.0) | — |
 
 > Windows 10/11 only. No admin required for portable version.
 
@@ -35,6 +36,8 @@ Get the latest installer from the **[Releases page](https://github.com/DilumSalu
 | 🌙 **Dark/Light Mode** | Toggle between themes with one click |
 | 📊 **Size Preview** | See exactly how much space you will free before you clean |
 | 🔒 **No Tracking** | Zero telemetry, zero ads, zero analytics |
+| 🗑️ **App Uninstaller** | Browse and uninstall installed programs from the app |
+| 📂 **Large File Finder** | Find files over 100 MB across your PC and delete with undo |
 
 ---
 
