@@ -68,7 +68,7 @@ export default function App() {
         <div className="drag flex items-center justify-between px-5 py-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-2">
             <span className="text-lg">🧹</span>
-            <span className="font-semibold text-sm tracking-tight">Sweep Helper</span>
+            <span className="font-semibold text-sm tracking-tight">Sweep Helper <span className="font-normal text-[10px] text-gray-400">v1.1</span></span>
           </div>
           <div className="no-drag flex items-center gap-2">
             {canUndo && tab === 'clean' && (
