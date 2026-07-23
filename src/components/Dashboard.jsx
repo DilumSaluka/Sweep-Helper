@@ -71,7 +71,9 @@ function CategoryRow({ cat }) {
         <span className="text-sm font-semibold text-blue-600 dark:text-blue-400">{formatSize(cat.size)}</span>
       </div>
       {cat.subCategories && cat.subCategories.length > 0 && (
-        <div className="ml-7 space-y-0.5">
+        <>
+          <p className="text-[10px] text-gray-400 ml-7">{cat.subCategories.length} items</p>
+          <div className="ml-7 space-y-0.5">
           {cat.subCategories.map(sub => (
             <div key={sub.subId} className="flex justify-between text-xs text-gray-400">
               <span>{sub.label}</span>
@@ -79,6 +81,7 @@ function CategoryRow({ cat }) {
             </div>
           ))}
         </div>
+        </>
       )}
     </div>
   )
