@@ -19,6 +19,7 @@ export default function App() {
   const [cleaning, setCleaning] = useState(false)
   const [results, setResults] = useState(null)
   const [canUndo, setCanUndo] = useState(false)
+  const [lastScan, setLastScan] = useState(null)
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', dark)
@@ -38,6 +39,7 @@ export default function App() {
       setItems(data)
       const hasUndo = await window.sweep.hasRestorableItems()
       setCanUndo(hasUndo)
+      setLastScan(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }))
     } catch {}
     setScanning(false)
   }, [])
@@ -114,6 +116,7 @@ export default function App() {
                 scanning={scanning}
                 cleaning={cleaning}
                 onClean={handleClean}
+                lastScan={lastScan}
               />
             )
           )}

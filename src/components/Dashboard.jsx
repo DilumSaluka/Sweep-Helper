@@ -1,4 +1,4 @@
-﻿export default function Dashboard({ items, scanning, cleaning, onClean }) {
+﻿export default function Dashboard({ items, scanning, cleaning, onClean, lastScan }) {
   const totalSize = items.reduce((sum, i) => sum + i.size, 0)
   const hasItems = items.some(i => i.size > 0)
 
@@ -18,6 +18,7 @@
         <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">
           {formatSize(totalSize)}
         </p>
+        {lastScan && <p className="text-[10px] text-gray-400 mt-1">Last scan: {lastScan}</p>}
       </div>
 
       <div className="flex-1 space-y-2">
