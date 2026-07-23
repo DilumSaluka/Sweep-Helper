@@ -54,6 +54,7 @@ app.on('window-all-closed', () => {
 
 ipcMain.handle('window:close', () => mainWindow?.close())
 ipcMain.handle('window:minimize', () => mainWindow?.minimize())
+ipcMain.handle('window:isMaximized', () => mainWindow?.isMaximized())
 
 ipcMain.handle('scan:disk', async () => {
   const all = await Promise.allSettled([

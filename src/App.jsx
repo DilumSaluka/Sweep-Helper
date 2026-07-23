@@ -24,6 +24,12 @@ export default function App() {
     document.documentElement.classList.toggle('dark', dark)
   }, [dark])
 
+  useEffect(() => {
+    const handler = (e) => { if (e.key === 'Escape') window.sweep.closeWindow() }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [])
+
   const scan = useCallback(async () => {
     setScanning(true)
     setResults(null)
