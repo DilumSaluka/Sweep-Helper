@@ -17,6 +17,7 @@ export default function UninstallManager() {
   }, [])
 
   const handleUninstall = async (app) => {
+    if (!window.confirm(`Are you sure you want to uninstall "${app.name}"?\n\nThis will remove the program from your computer.`)) return
     setUninstalling(app.name)
     try {
       await window.sweep.uninstallApp(app)
