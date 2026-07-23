@@ -114,6 +114,9 @@ export default function App() {
           {tab === 'uninstall' && <UninstallManager />}
           {tab === 'files' && <LargeFileFinder />}
         </div>
+        <div className="no-drag text-center text-[10px] text-gray-400 pb-2">
+          © 2026 Dilum Saluka
+        </div>
       </div>
     </div>
   )

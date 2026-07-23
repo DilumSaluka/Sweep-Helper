@@ -12,7 +12,7 @@ async function list() {
     $results = @()
     foreach ($regPath in $paths) {
       if (-not (Test-Path $regPath)) { continue }
-      Get-ItemProperty $regPath -ErrorAction SilentlyContinue | Where-Object {
+      $results += Get-ItemProperty $regPath -ErrorAction SilentlyContinue | Where-Object {
         $_.DisplayName -and $_.SystemComponent -ne 1 -and $_.ParentKeyName -eq $null -and $_.DisplayName -notmatch '^(KB[0-9]+|Update for|Security Update|Hotfix)'
       } | ForEach-Object {
         $size = if ($_.EstimatedSize) { $_.EstimatedSize * 1024 } else { 0 }
@@ -27,7 +27,7 @@ async function list() {
         }
       }
     }
-    $results | Sort-Object Name | ConvertTo-Json -Compress
+    $results | Sort-Object Name -Unique | ConvertTo-Json -Compress
   `
   return new Promise((resolve) => {
     const child = execFile(POWER_SHELL, ['-NoProfile', '-Command', script], { maxBuffer: 10 * 1024 * 1024, timeout: 30000 }, (err, stdout) => {
