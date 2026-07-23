@@ -26,11 +26,11 @@ async function scan(driveRoot) {
     $root = '${driveRoot.replace(/\\/g, '\\\\')}'
     $results = @()
     try {
-      Get-ChildItem -Path $root -Recurse -File -ErrorAction SilentlyContinue -Depth 6 | Where-Object { $_.Length -gt 104857600 } | ForEach-Object {
+      $results += Get-ChildItem -Path $root -Recurse -File -ErrorAction SilentlyContinue -Depth 6 | Where-Object { $_.Length -gt 104857600 } | ForEach-Object {
         [PSCustomObject]@{ FullName = $_.FullName; Length = $_.Length; LastWrite = $_.LastWriteTime.ToString('yyyy-MM-dd') }
       }
     } catch {}
-    $results | Sort-Object Length -Descending | ConvertTo-Json -Compress
+    if ($results.Count -eq 0) { Write-Output '[]' } else { $results | Sort-Object Length -Descending | ConvertTo-Json -Compress }
   `
   return new Promise((resolve) => {
     const child = execFile(POWER_SHELL, ['-NoProfile', '-Command', script], { maxBuffer: 100 * 1024 * 1024, timeout: 120000 }, (err, stdout) => {
@@ -50,14 +50,16 @@ async function scan(driveRoot) {
 }
 
 async function deleteFiles(filePaths) {
+  const json = JSON.stringify(filePaths)
   const script = `
+    $paths = '${json.replace(/'/g, "''")}' | ConvertFrom-Json
     $restoreRoot = [Environment]::GetFolderPath('UserProfile') + '\\.sweep-helper-restore'
     if (-not (Test-Path $restoreRoot)) { New-Item -ItemType Directory -Path $restoreRoot -Force | Out-Null }
     $batch = [DateTime]::Now.ToString('yyyyMMdd-HHmmss')
-    foreach ($p in @(${filePaths.map(p => `'${p.replace(/'/g, "''")}'`).join(',')})) {
-      $dest = \"$restoreRoot\\$batch\\$([IO.Path]::GetFileName($p))\"
+    foreach ($p in $paths) {
+      $dest = Join-Path $restoreRoot $batch ([IO.Path]::GetFileName($p))
       $i = 1
-      while (Test-Path $dest) { $dest = \"$restoreRoot\\$batch\\$([IO.Path]::GetFileNameWithoutExtension($p))_$i$([IO.Path]::GetExtension($p))\"; $i++ }
+      while (Test-Path $dest) { $dest = Join-Path $restoreRoot $batch (\"$([IO.Path]::GetFileNameWithoutExtension($p))_$i$([IO.Path]::GetExtension($p))\") ; $i++ }
       $parent = Split-Path $dest -Parent
       if (-not (Test-Path $parent)) { New-Item -ItemType Directory -Path $parent -Force | Out-Null }
       try { Move-Item -Path $p -Destination $dest -Force -ErrorAction Stop } catch {}
