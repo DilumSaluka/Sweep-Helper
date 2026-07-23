@@ -87,19 +87,32 @@ export default function LargeFileFinder() {
         <p className="text-xs text-gray-400">
           {scanned ? `${files.length} files >100MB` : 'Select a drive and scan'}
         </p>
-        {selected.size > 0 && (
-          <button
-            onClick={handleDelete}
-            disabled={deleting}
-            className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${
-              deleting
-                ? 'bg-gray-200 dark:bg-gray-700 text-gray-400'
-                : 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 border border-red-200 dark:border-red-800'
-            }`}
-          >
-            {deleting ? 'Moving...' : `Delete (${selected.size})`}
-          </button>
-        )}
+        <div className="flex gap-2">
+          {scanned && files.length > 0 && (
+            <button
+              onClick={() => {
+                if (selected.size === files.length) setSelected(new Set())
+                else setSelected(new Set(files.map(f => f.path)))
+              }}
+              className="px-2 py-1 rounded-lg text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700"
+            >
+              {selected.size === files.length ? 'Deselect All' : 'Select All'}
+            </button>
+          )}
+          {selected.size > 0 && (
+            <button
+              onClick={handleDelete}
+              disabled={deleting}
+              className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${
+                deleting
+                  ? 'bg-gray-200 dark:bg-gray-700 text-gray-400'
+                  : 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 border border-red-200 dark:border-red-800'
+              }`}
+            >
+              {deleting ? 'Moving...' : `Delete (${selected.size})`}
+            </button>
+          )}
+        </div>
       </div>
 
       {scanning && (
