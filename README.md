@@ -16,8 +16,8 @@ Get the latest installer from the **[Releases page](https://github.com/DilumSalu
 
 | Version | Download | Size |
 |---------|----------|------|
-| **v1.1 (latest)** | [Sweep Helper Setup 1.0.0.exe](https://github.com/DilumSaluka/Sweep-Helper/releases/download/v1.1/Sweep.Helper.Setup.1.0.0.exe) | ~77 MB |
-| **v1.1 (portable)** | [Sweep-Helper-Portable-1.0.0.zip](https://github.com/DilumSaluka/Sweep-Helper/releases/download/v1.1/Sweep-Helper-Portable-1.0.0.zip) | ~77 MB |
+| **v1.1 (latest)** | [Sweep Helper Setup 1.1.0.exe](https://github.com/DilumSaluka/Sweep-Helper/releases/download/v1.1/Sweep.Helper.Setup.1.1.0.exe) | ~77 MB |
+| **v1.1 (portable)** | [Sweep-Helper-Portable-1.1.0.zip](https://github.com/DilumSaluka/Sweep-Helper/releases/download/v1.1/Sweep-Helper-Portable-1.1.0.zip) | ~77 MB |
 | v1.0 | [Release page](https://github.com/DilumSaluka/Sweep-Helper/releases/tag/v1.0) | — |
 
 > Windows 10/11 only. No admin required for portable version.

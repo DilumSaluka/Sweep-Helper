@@ -1,6 +1,6 @@
 {
   "name": "sweep-helper",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Your friendly PC cleaner — sweep junk away in one click",
   "main": "electron/main.js",
   "author": {
