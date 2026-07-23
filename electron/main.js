@@ -4,6 +4,8 @@ const tempCleaner = require('./cleaners/temp-cleaner')
 const recycleBin = require('./cleaners/recycle-bin')
 const browserCache = require('./cleaners/browser-cache')
 const safeBin = require('./cleaners/safe-bin')
+const largeFileFinder = require('./cleaners/large-file-finder')
+const uninstallApps = require('./cleaners/uninstall-apps')
 
 let mainWindow = null
 
@@ -80,4 +82,20 @@ ipcMain.handle('undo:last', async () => {
 
 ipcMain.handle('safe-bin:exists', async () => {
   return safeBin.hasRestorableItems()
+})
+
+ipcMain.handle('files:scan', async () => {
+  return largeFileFinder.scan()
+})
+
+ipcMain.handle('files:delete', async (_event, paths) => {
+  return largeFileFinder.deleteFiles(paths)
+})
+
+ipcMain.handle('uninstall:list', async () => {
+  return uninstallApps.list()
+})
+
+ipcMain.handle('uninstall:run', async (_event, app) => {
+  return uninstallApps.uninstall(app)
 })

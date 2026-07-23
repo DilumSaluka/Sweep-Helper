@@ -35,6 +35,7 @@
         }
       ]
     },
+    "icon": "assets/icon.png",
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
