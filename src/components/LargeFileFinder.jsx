@@ -8,6 +8,7 @@ export default function LargeFileFinder() {
   const [selected, setSelected] = useState(new Set())
   const [deleting, setDeleting] = useState(false)
   const [scanned, setScanned] = useState(false)
+  const [sortAsc, setSortAsc] = useState(false)
 
   useEffect(() => {
     ;(async () => {
@@ -87,7 +88,16 @@ export default function LargeFileFinder() {
         <p className="text-xs text-gray-400">
           {scanned ? `${files.length} files >100MB` : 'Select a drive and scan'}
         </p>
-        <div className="flex gap-2">
+        <div className="flex gap-1">
+          {scanned && files.length > 0 && (
+            <button
+              onClick={() => setSortAsc(!sortAsc)}
+              className="px-2 py-1 rounded-lg text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700"
+              title={sortAsc ? 'Sorted small to large' : 'Sorted large to small'}
+            >
+              {sortAsc ? '↑' : '↓'}
+            </button>
+          )}
           {scanned && files.length > 0 && (
             <button
               onClick={() => {
@@ -124,7 +134,7 @@ export default function LargeFileFinder() {
 
       {!scanning && (
         <div className="flex-1 overflow-y-auto space-y-1">
-          {files.map((file, i) => (
+          {[...files].sort((a, b) => sortAsc ? a.size - b.size : b.size - a.size).map((file, i) => (
             <div
               key={i}
               onClick={() => toggleFile(file.path)}
