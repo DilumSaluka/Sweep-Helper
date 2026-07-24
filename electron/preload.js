@@ -11,5 +11,13 @@ contextBridge.exposeInMainWorld('sweep', {
   scanLargeFiles: (drive) => ipcRenderer.invoke('files:scan', drive),
   deleteLargeFiles: (paths) => ipcRenderer.invoke('files:delete', paths),
   listUninstallApps: () => ipcRenderer.invoke('uninstall:list'),
-  uninstallApp: (app) => ipcRenderer.invoke('uninstall:run', app)
+  uninstallApp: (app) => ipcRenderer.invoke('uninstall:run', app),
+  listStartup: () => ipcRenderer.invoke('startup:list'),
+  toggleStartup: (item, enable) => ipcRenderer.invoke('startup:toggle', item, enable),
+  listDupDrives: () => ipcRenderer.invoke('duplicate:drives'),
+  scanDuplicates: (drive) => ipcRenderer.invoke('duplicate:scan', drive),
+  deleteDuplicates: (paths) => ipcRenderer.invoke('duplicate:delete', paths),
+  checkUpdate: () => ipcRenderer.invoke('update:check'),
+  downloadUpdate: (url) => ipcRenderer.invoke('update:download', url),
+  installUpdate: (path) => ipcRenderer.invoke('update:install', path)
 })

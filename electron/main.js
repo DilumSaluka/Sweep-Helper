@@ -1,11 +1,14 @@
-﻿const { app, BrowserWindow, ipcMain, shell } = require('electron')
+﻿const { app, BrowserWindow, ipcMain, shell, net } = require('electron')
 const path = require('path')
+const fs = require('fs')
 const tempCleaner = require('./cleaners/temp-cleaner')
 const recycleBin = require('./cleaners/recycle-bin')
 const browserCache = require('./cleaners/browser-cache')
 const safeBin = require('./cleaners/safe-bin')
 const largeFileFinder = require('./cleaners/large-file-finder')
 const uninstallApps = require('./cleaners/uninstall-apps')
+const startupManager = require('./cleaners/startup-manager')
+const duplicateFinder = require('./cleaners/duplicate-finder')
 
 let mainWindow = null
 
@@ -103,4 +106,60 @@ ipcMain.handle('uninstall:list', async () => {
 
 ipcMain.handle('uninstall:run', async (_event, app) => {
   return uninstallApps.uninstall(app)
+})
+
+ipcMain.handle('startup:list', async () => {
+  return startupManager.list()
+})
+
+ipcMain.handle('startup:toggle', async (_event, item, enable) => {
+  return startupManager.toggle(item, enable)
+})
+
+ipcMain.handle('duplicate:drives', async () => {
+  return duplicateFinder.listDrives()
+})
+
+ipcMain.handle('duplicate:scan', async (_event, driveRoot) => {
+  return duplicateFinder.scan(driveRoot)
+})
+
+ipcMain.handle('duplicate:delete', async (_event, paths) => {
+  return duplicateFinder.deleteFiles(paths)
+})
+
+const GITHUB_REPO = 'DilumSaluka/Sweep-Helper'
+const UPDATE_URL = `https://api.github.com/repos/${GITHUB_REPO}/releases/latest`
+
+ipcMain.handle('update:check', async () => {
+  try {
+    const res = await net.fetch(UPDATE_URL, { headers: { Accept: 'application/vnd.github.v3+json' } })
+    const data = await res.json()
+    if (!data.tag_name) return { available: false }
+    const latestTag = data.tag_name.replace(/^v/, '')
+    const current = app.getVersion()
+    const latestParts = latestTag.split('.').map(Number)
+    const currentParts = current.split('.').map(Number)
+    const isNewer = latestParts[0] > currentParts[0] || (latestParts[0] === currentParts[0] && latestParts[1] > currentParts[1])
+    if (!isNewer) return { available: false }
+    const asset = data.assets.find(a => a.name.endsWith('.exe') && a.name.includes('Setup'))
+    return { available: true, version: latestTag, url: asset?.browser_download_url, releaseUrl: data.html_url }
+  } catch { return { available: false, error: true } }
+})
+
+ipcMain.handle('update:download', async (_event, url) => {
+  const tempDir = app.getPath('temp')
+  const dest = path.join(tempDir, 'sweep-helper-update.exe')
+  try {
+    const res = await net.fetch(url)
+    if (!res.ok) return { success: false, error: `HTTP ${res.status}` }
+    const buffer = Buffer.from(await res.arrayBuffer())
+    fs.writeFileSync(dest, buffer)
+    return { success: true, path: dest }
+  } catch (e) { return { success: false, error: e.message } }
+})
+
+ipcMain.handle('update:install', async (_event, installerPath) => {
+  shell.openPath(installerPath)
+  app.quit()
 })
