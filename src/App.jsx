@@ -63,8 +63,9 @@ export default function App() {
 
   const handleClean = async () => {
     const total = items.reduce((sum, i) => sum + i.size, 0)
+    const sizeLabel = total > 1073741824 ? (total / 1073741824).toFixed(1) + ' GB' : (total / 1048576).toFixed(1) + ' MB'
     if (total > 500 * 1024 * 1024) {
-      if (!window.confirm(`Sweep ${formatSize(total)} of files? This will free a lot of space.`)) return
+      if (!window.confirm(`Sweep ${sizeLabel} of files? This will free a lot of space.`)) return
     }
     setCleaning(true)
     const before = total
