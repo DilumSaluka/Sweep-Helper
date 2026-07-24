@@ -131,6 +131,21 @@ export default function DuplicateFinder() {
             >
               None
             </button>
+            <button
+              onClick={() => {
+                const allKeys = new Set()
+                groups.forEach((g, i) => g.files.forEach(f => allKeys.add(`${i}::${f}`)))
+                const inverted = new Map()
+                groups.forEach((g, i) => g.files.forEach(f => {
+                  const key = `${i}::${f}`
+                  if (!checked.has(key)) inverted.set(key, f)
+                }))
+                setChecked(inverted)
+              }}
+              className="px-2 py-1 rounded-lg text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700"
+            >
+              Invert
+            </button>
           </div>
         )}
         {checkedCount > 0 && (
