@@ -67,6 +67,17 @@ export default function LargeFileFinder() {
           ))}
         </select>
         <button
+          title="Refresh drives"
+          onClick={async () => {
+            const list = await window.sweep.listDrives()
+            setDrives(list)
+            if (list.length > 0) setSelectedDrive(list[0].root)
+          }}
+          className="shrink-0 px-2 py-2 rounded-lg text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700"
+        >
+          ↻
+        </button>
+        <button
           onClick={handleScan}
           disabled={scanning || !selectedDrive}
           className={`shrink-0 px-4 py-2 rounded-lg text-xs font-medium transition-all ${
@@ -159,6 +170,13 @@ export default function LargeFileFinder() {
                   {formatSize(file.size)} · {file.modified}
                 </p>
               </div>
+              <button
+                title="Open location"
+                onClick={e => { e.stopPropagation(); window.sweep.openLocation(file.path) }}
+                className="shrink-0 p-1 text-gray-400 hover:text-blue-500"
+              >
+                📂
+              </button>
               <span className="shrink-0 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
                 {formatSize(file.size)}
               </span>

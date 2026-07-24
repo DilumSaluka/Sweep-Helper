@@ -159,6 +159,10 @@ ipcMain.handle('update:download', async (_event, url) => {
   } catch (e) { return { success: false, error: e.message } }
 })
 
+ipcMain.handle('shell:openLocation', async (_event, filePath) => {
+  shell.showItemInFolder(filePath)
+})
+
 ipcMain.handle('update:install', async (_event, installerPath) => {
   shell.openPath(installerPath)
   app.quit()
