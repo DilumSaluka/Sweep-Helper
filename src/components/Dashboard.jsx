@@ -1,4 +1,12 @@
-﻿export default function Dashboard({ items, scanning, cleaning, onClean, lastScan }) {
+﻿import { useState, useEffect } from 'react'
+
+export default function Dashboard({ items, scanning, cleaning, onClean, lastScan }) {
+  const [sysInfo, setSysInfo] = useState(null)
+
+  useEffect(() => {
+    window.sweep.getSystemInfo().then(setSysInfo)
+  }, [])
+
   const totalSize = items.reduce((sum, i) => sum + i.size, 0)
   const hasItems = items.some(i => i.size > 0)
 
@@ -56,6 +64,14 @@
           ) : 'Nothing to Sweep'}
         </button>
       </div>
+
+      {sysInfo && (
+        <div className="mt-2 flex items-center justify-center gap-3 text-[10px] text-gray-400">
+          <span>{sysInfo.platform === 'win32' ? 'Windows' : sysInfo.platform} {sysInfo.release}</span>
+          <span>·</span>
+          <span>{formatSize(sysInfo.totalMem)} RAM</span>
+        </div>
+      )}
     </div>
   )
 }

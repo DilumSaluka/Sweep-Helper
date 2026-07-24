@@ -1,6 +1,7 @@
 ﻿const { app, BrowserWindow, ipcMain, shell, net } = require('electron')
 const path = require('path')
 const fs = require('fs')
+const os = require('os')
 const tempCleaner = require('./cleaners/temp-cleaner')
 const recycleBin = require('./cleaners/recycle-bin')
 const browserCache = require('./cleaners/browser-cache')
@@ -157,6 +158,19 @@ ipcMain.handle('update:download', async (_event, url) => {
     fs.writeFileSync(dest, buffer)
     return { success: true, path: dest }
   } catch (e) { return { success: false, error: e.message } }
+})
+
+ipcMain.handle('system:info', async () => {
+  const totalMem = os.totalmem()
+  const freeMem = os.freemem()
+  return {
+    platform: os.platform(),
+    release: os.release(),
+    arch: os.arch(),
+    totalMem,
+    freeMem,
+    hostname: os.hostname()
+  }
 })
 
 ipcMain.handle('shell:openLocation', async (_event, filePath) => {
