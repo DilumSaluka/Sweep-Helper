@@ -1,10 +1,11 @@
-﻿export default function Results({ freed, onRestart }) {
+﻿export default function Results({ freed, count, onRestart }) {
   return (
     <div className="flex flex-col items-center justify-center h-full gap-4 text-center">
       <div className="text-5xl">✨</div>
       <p className="text-xl font-bold text-green-600 dark:text-green-400">
         Swept {formatSize(freed)}!
       </p>
+      <p className="text-sm text-gray-400">{count} items cleaned</p>
       <p className="text-sm text-gray-400 max-w-xs">
         Your PC has more free space now. Everything is safe — files go to a restore folder, not permanent delete.
       </p>

@@ -72,7 +72,7 @@ export default function App() {
     try {
       await window.sweep.cleanItems(items)
     } catch {}
-    setResults({ freed: before })
+    setResults({ freed: before, count: items.reduce((s, i) => s + (i.subCategories?.length || 1), 0) })
     setCleaning(false)
   }
 
@@ -162,7 +162,7 @@ export default function App() {
         <div className="flex-1 overflow-y-auto px-5 py-4">
           {tab === 'clean' && (
             results ? (
-              <Results freed={results.freed} onRestart={handleRestart} />
+              <Results freed={results.freed} count={results.count} onRestart={handleRestart} />
             ) : (
               <Dashboard
                 items={items}
