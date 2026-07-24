@@ -62,8 +62,12 @@ export default function App() {
   useEffect(() => { if (tab === 'clean') scan() }, [tab, scan])
 
   const handleClean = async () => {
+    const total = items.reduce((sum, i) => sum + i.size, 0)
+    if (total > 500 * 1024 * 1024) {
+      if (!window.confirm(`Sweep ${formatSize(total)} of files? This will free a lot of space.`)) return
+    }
     setCleaning(true)
-    const before = items.reduce((sum, i) => sum + i.size, 0)
+    const before = total
     try {
       await window.sweep.cleanItems(items)
     } catch {}
