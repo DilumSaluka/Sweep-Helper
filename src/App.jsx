@@ -32,7 +32,9 @@ export default function App() {
   }, [dark])
 
   useEffect(() => {
-    const handler = (e) => { if (e.key === 'Escape') window.sweep.closeWindow() }
+    const handler = (e) => {
+      if (e.key === 'Escape' || (e.ctrlKey && e.key === 'w')) window.sweep.closeWindow()
+    }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
   }, [])
