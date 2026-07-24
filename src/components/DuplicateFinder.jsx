@@ -178,20 +178,27 @@ export default function DuplicateFinder() {
                     const key = `${i}::${file}`
                     const isChecked = checked.has(key)
                     return (
-                      <div
-                        key={j}
-                        onClick={() => toggleFile(i, file)}
-                        className={`flex items-center gap-2 px-3 py-1.5 cursor-pointer text-xs ${
-                          isChecked ? 'bg-red-50 dark:bg-red-900/10' : 'hover:bg-gray-50 dark:hover:bg-gray-750'
-                        }`}
-                      >
-                        <div className={`w-3.5 h-3.5 rounded border-2 flex items-center justify-center shrink-0 ${
-                          isChecked ? 'bg-red-500 border-red-500' : 'border-gray-300 dark:border-gray-600'
-                        }`}>
-                          {isChecked && <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
-                        </div>
-                        <span className="truncate text-gray-500">{file}</span>
+                    <div
+                      key={j}
+                      onClick={() => toggleFile(i, file)}
+                      className={`flex items-center gap-2 px-3 py-1.5 cursor-pointer text-xs ${
+                        isChecked ? 'bg-red-50 dark:bg-red-900/10' : 'hover:bg-gray-50 dark:hover:bg-gray-750'
+                      }`}
+                    >
+                      <div className={`w-3.5 h-3.5 rounded border-2 flex items-center justify-center shrink-0 ${
+                        isChecked ? 'bg-red-500 border-red-500' : 'border-gray-300 dark:border-gray-600'
+                      }`}>
+                        {isChecked && <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
                       </div>
+                      <span className="truncate text-gray-500 flex-1">{file}</span>
+                      <button
+                        title="Copy path"
+                        onClick={e => { e.stopPropagation(); navigator.clipboard.writeText(file) }}
+                        className="shrink-0 text-gray-400 hover:text-blue-500 text-xs"
+                      >
+                        📋
+                      </button>
+                    </div>
                     )
                   })}
                 </div>
