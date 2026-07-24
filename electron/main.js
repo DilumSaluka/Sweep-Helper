@@ -173,6 +173,10 @@ ipcMain.handle('system:info', async () => {
   }
 })
 
+ipcMain.handle('shell:openRestore', async () => {
+  shell.openPath(path.join(os.homedir(), '.sweep-helper-restore'))
+})
+
 ipcMain.handle('shell:openLocation', async (_event, filePath) => {
   shell.showItemInFolder(filePath)
 })

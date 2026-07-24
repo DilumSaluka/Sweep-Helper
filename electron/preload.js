@@ -18,6 +18,7 @@ contextBridge.exposeInMainWorld('sweep', {
   scanDuplicates: (drive) => ipcRenderer.invoke('duplicate:scan', drive),
   deleteDuplicates: (paths) => ipcRenderer.invoke('duplicate:delete', paths),
   getSystemInfo: () => ipcRenderer.invoke('system:info'),
+  openRestore: () => ipcRenderer.invoke('shell:openRestore'),
   openLocation: (path) => ipcRenderer.invoke('shell:openLocation', path),
   checkUpdate: () => ipcRenderer.invoke('update:check'),
   downloadUpdate: (url) => ipcRenderer.invoke('update:download', url),

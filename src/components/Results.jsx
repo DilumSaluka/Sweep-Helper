@@ -38,6 +38,12 @@ export default function Results({ freed, count, onRestart }) {
         ✅ Files moved to hidden restore folder (auto-deletes after 7 days)
       </div>
       <button
+        onClick={() => window.sweep.openRestore()}
+        className="px-3 py-1.5 text-xs font-medium rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 transition-all"
+      >
+        📂 Open restore folder
+      </button>
+      <button
         onClick={onRestart}
         className="px-4 py-2 text-xs font-medium rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 transition-all"
       >
