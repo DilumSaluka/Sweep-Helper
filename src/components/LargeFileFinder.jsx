@@ -11,6 +11,8 @@ export default function LargeFileFinder() {
   const [sortAsc, setSortAsc] = useState(false)
   const [ctxMenu, setCtxMenu] = useState(null)
   const [scanProgress, setScanProgress] = useState(0)
+  const [scanStartTime, setScanStartTime] = useState(null)
+  const [elapsed, setElapsed] = useState(0)
 
   useEffect(() => {
     ;(async () => {
@@ -29,14 +31,21 @@ export default function LargeFileFinder() {
     setFiles([])
     setSelected(new Set())
     setScanned(false)
-    const interval = setInterval(() => {
+    setElapsed(0)
+    const start = Date.now()
+    setScanStartTime(start)
+    const elapsedInterval = setInterval(() => {
+      setElapsed(Math.floor((Date.now() - start) / 1000))
+    }, 1000)
+    const progressInterval = setInterval(() => {
       setScanProgress(p => Math.min(p + 5, 90))
     }, 500)
     try {
       const data = await window.sweep.scanLargeFiles(selectedDrive)
       setFiles(data)
     } catch {}
-    clearInterval(interval)
+    clearInterval(progressInterval)
+    clearInterval(elapsedInterval)
     setScanProgress(100)
     setScanning(false)
     setScanned(true)
@@ -177,7 +186,7 @@ export default function LargeFileFinder() {
           <div className="w-full max-w-xs bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
             <div className="h-full bg-emerald-500 rounded-full transition-all" style={{ width: `${Math.min(scanProgress, 100)}%` }} />
           </div>
-          <p className="text-sm text-gray-400">Scanning {selectedDrive}... {Math.min(scanProgress, 100)}%</p>
+          <p className="text-sm text-gray-400">Scanning {selectedDrive}... {Math.min(scanProgress, 100)}% · {elapsed}s elapsed</p>
         </div>
       )}
 
