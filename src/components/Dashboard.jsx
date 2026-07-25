@@ -32,6 +32,11 @@ export default function Dashboard({ items, scanning, cleaning, onClean, lastScan
           {formatSize(totalSize)}
         </p>
         {lastScan && <p className="text-[10px] text-gray-400 mt-1">Last scan: {lastScan}</p>}
+        {drives.length > 0 && (
+          <p className="text-[10px] text-gray-400">
+            {formatSize(drives.reduce((sum, d) => sum + d.free, 0))} free on disk
+          </p>
+        )}
       </div>
 
       <div className="flex-1 space-y-2">
