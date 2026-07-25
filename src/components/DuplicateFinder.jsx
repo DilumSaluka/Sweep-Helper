@@ -32,9 +32,7 @@ export default function DuplicateFinder() {
     try {
       const data = await window.sweep.scanDuplicates(selectedDrive)
       setGroups(data)
-      const first = new Set()
-      data.forEach((g, i) => first.add(i))
-      setExpanded(first)
+      setExpanded(new Set())
     } catch {}
     setScanning(false)
     setScanned(true)
