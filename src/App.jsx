@@ -28,6 +28,7 @@ export default function App() {
   const [dlProgress, setDlProgress] = useState(null)
   const [updateError, setUpdateError] = useState(null)
   const [showAbout, setShowAbout] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(true)
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', dark)
@@ -49,6 +50,10 @@ export default function App() {
         if (info.available) setUpdateInfo(info)
       } catch {}
     })()
+  }, [])
+
+  useEffect(() => {
+    window.sweep.isAdmin().then(setIsAdmin).catch(() => {})
   }, [])
 
   const scan = useCallback(async () => {
@@ -202,8 +207,9 @@ export default function App() {
           {tab === 'startup' && <StartupManager />}
           {tab === 'duplicates' && <DuplicateFinder />}
         </div>
-        <div className="no-drag text-center text-[10px] text-gray-400 pb-2">
-          © 2026 Dilum Saluka
+        <div className="no-drag flex items-center justify-center gap-2 text-[10px] text-gray-400 pb-2">
+          <span>© 2026 Dilum Saluka</span>
+          {!isAdmin && <span className="text-amber-500">⚠️ Limited mode</span>}
         </div>
       </div>
 

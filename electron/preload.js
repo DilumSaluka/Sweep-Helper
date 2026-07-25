@@ -20,6 +20,7 @@ contextBridge.exposeInMainWorld('sweep', {
   getSystemInfo: () => ipcRenderer.invoke('system:info'),
   openRestore: () => ipcRenderer.invoke('shell:openRestore'),
   openLocation: (path) => ipcRenderer.invoke('shell:openLocation', path),
+  isAdmin: () => ipcRenderer.invoke('app:isAdmin'),
   checkUpdate: () => ipcRenderer.invoke('update:check'),
   downloadUpdate: (url) => ipcRenderer.invoke('update:download', url),
   installUpdate: (path) => ipcRenderer.invoke('update:install', path)

@@ -80,6 +80,12 @@ ipcMain.handle('clean:items', async (_event, items) => {
   return { success: true }
 })
 
+ipcMain.handle('app:isAdmin', async () => {
+  try {
+    return require('child_process').execSync('net session', { timeout: 2000 }).toString().length > 0
+  } catch { return false }
+})
+
 ipcMain.handle('undo:last', async () => {
   try {
     await safeBin.restoreLast()
