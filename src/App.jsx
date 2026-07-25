@@ -35,10 +35,11 @@ export default function App() {
   useEffect(() => {
     const handler = (e) => {
       if (e.key === 'Escape' || (e.ctrlKey && e.key === 'w')) window.sweep.closeWindow()
+      if (e.ctrlKey && e.key === 'r') { e.preventDefault(); if (tab === 'clean') scan() }
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
-  }, [])
+  }, [tab, scan])
 
   useEffect(() => {
     ;(async () => {
