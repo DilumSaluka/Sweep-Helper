@@ -4,6 +4,7 @@ export default function StartupManager() {
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
   const [toggling, setToggling] = useState(null)
+  const [search, setSearch] = useState('')
 
   useEffect(() => {
     ;(async () => {
@@ -34,11 +35,23 @@ export default function StartupManager() {
     )
   }
 
+  const filtered = items.filter(item =>
+    item.name.toLowerCase().includes(search.toLowerCase()) ||
+    item.command.toLowerCase().includes(search.toLowerCase())
+  )
+
   return (
     <div className="flex flex-col h-full">
-      <p className="text-xs text-gray-400 mb-3">{items.length} startup {items.length === 1 ? 'item' : 'items'}</p>
+      <input
+        type="text"
+        placeholder="Search by name or command..."
+        value={search}
+        onChange={e => setSearch(e.target.value)}
+        className="mb-2 px-3 py-2 text-xs rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-amber-500"
+      />
+      <p className="text-xs text-gray-400 mb-2">{filtered.length} of {items.length} startup {items.length === 1 ? 'item' : 'items'}</p>
       <div className="flex-1 overflow-y-auto space-y-1">
-        {items.map((item, i) => (
+        {filtered.map((item, i) => (
           <div key={i} className="flex items-center justify-between bg-white dark:bg-gray-800 rounded-lg px-3 py-2 border border-gray-100 dark:border-gray-700">
             <div className="flex-1 min-w-0 mr-2">
               <p className="text-sm font-medium truncate">{item.name}</p>
@@ -63,8 +76,10 @@ export default function StartupManager() {
             </button>
           </div>
         ))}
-        {items.length === 0 && (
-          <p className="text-center text-sm text-gray-400 py-8">No startup items found</p>
+        {filtered.length === 0 && (
+          <p className="text-center text-sm text-gray-400 py-8">
+            {search ? 'No matching startup items found' : 'No startup items found'}
+          </p>
         )}
       </div>
     </div>
