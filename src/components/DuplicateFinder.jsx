@@ -236,7 +236,7 @@ export default function DuplicateFinder() {
                       }`}>
                         {isChecked && <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
                       </div>
-                      <span className="truncate text-gray-500 flex-1">{file}</span>
+                      <span className="truncate text-gray-500 flex-1" title={file}>{file}</span>
                       <button
                         title="Copy path"
                         onClick={e => { e.stopPropagation(); navigator.clipboard.writeText(file) }}
