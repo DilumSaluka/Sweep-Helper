@@ -32,6 +32,9 @@ export default function Dashboard({ items, scanning, cleaning, onClean, lastScan
           {formatSize(totalSize)}
         </p>
         {lastScan && <p className="text-[10px] text-gray-400 mt-1">Last scan: {lastScan}</p>}
+        {items.filter(i => i.size > 0).length > 0 && (
+          <p className="text-[10px] text-gray-400 mt-0.5">{items.filter(i => i.size > 0).length} categories with cleanable files</p>
+        )}
         {drives.length > 0 && (
           <p className="text-[10px] text-gray-400">
             {formatSize(drives.reduce((sum, d) => sum + d.free, 0))} free on disk
