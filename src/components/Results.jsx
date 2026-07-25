@@ -22,6 +22,7 @@ export default function Results({ freed, count, onRestart }) {
         Swept {formatSize(freed)}!
       </p>
       <p className="text-sm text-gray-400">{count} items cleaned</p>
+      <p className="text-xs text-gray-400">Recoverable: {formatSize(freed)}</p>
       <p className="text-sm text-gray-400 max-w-xs">
         Your PC has more free space now. Everything is safe — files go to a restore folder, not permanent delete.
       </p>
