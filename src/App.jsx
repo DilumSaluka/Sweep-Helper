@@ -26,6 +26,7 @@ export default function App() {
   const [lastScan, setLastScan] = useState(null)
   const [updateInfo, setUpdateInfo] = useState(null)
   const [dlProgress, setDlProgress] = useState(null)
+  const [updateError, setUpdateError] = useState(null)
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', dark)
@@ -34,10 +35,11 @@ export default function App() {
   useEffect(() => {
     const handler = (e) => {
       if (e.key === 'Escape' || (e.ctrlKey && e.key === 'w')) window.sweep.closeWindow()
+      if (e.ctrlKey && e.key === 'r') { e.preventDefault(); if (tab === 'clean') scan() }
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
-  }, [])
+  }, [tab, scan])
 
   useEffect(() => {
     ;(async () => {
@@ -63,7 +65,7 @@ export default function App() {
 
   useEffect(() => { if (tab === 'clean') scan() }, [tab, scan])
 
-  const handleClean = async () => {
+  const handleClean = useCallback(async () => {
     const total = items.reduce((sum, i) => sum + i.size, 0)
     const sizeLabel = total > 1073741824 ? (total / 1073741824).toFixed(1) + ' GB' : (total / 1048576).toFixed(1) + ' MB'
     if (total > 500 * 1024 * 1024) {
@@ -76,7 +78,7 @@ export default function App() {
     } catch {}
     setResults({ freed: before, count: items.reduce((s, i) => s + (i.subCategories?.length || 1), 0) })
     setCleaning(false)
-  }
+  }, [items])
 
   const handleUndo = async () => {
     try {
@@ -99,9 +101,10 @@ export default function App() {
     } catch {}
   }
 
-  const handleUpdate = async () => {
+  const handleUpdate = useCallback(async () => {
     if (!updateInfo?.url) return
     setDlProgress('Downloading...')
+    setUpdateError(null)
     try {
       const result = await window.sweep.downloadUpdate(updateInfo.url)
       if (result.success) {
@@ -109,23 +112,33 @@ export default function App() {
         await window.sweep.installUpdate(result.path)
       } else {
         setDlProgress(null)
+        setUpdateError('Download failed: ' + (result.error || 'Unknown error'))
       }
     } catch {
       setDlProgress(null)
+      setUpdateError('Download failed — check your connection')
     }
-  }
+  }, [updateInfo])
 
-  const updateBanner = updateInfo && (
-    <div className="no-drag flex items-center justify-between px-4 py-1.5 bg-blue-50 dark:bg-blue-900/20 border-b border-blue-200 dark:border-blue-800">
-      <p className="text-xs text-blue-600 dark:text-blue-400">
-        Update v{updateInfo.version} available
+  const updateBanner = (updateInfo || updateError) && (
+    <div className={`no-drag flex items-center justify-between px-4 py-1.5 border-b ${
+      updateError
+        ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
+        : 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800'
+    }`}>
+      <p className={`text-xs ${updateError ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-400'}`}>
+        {updateError || `Update v${updateInfo.version} available`}
       </p>
       <button
-        onClick={handleUpdate}
+        onClick={updateError ? () => { setUpdateError(null); handleCheckUpdate() } : handleUpdate}
         disabled={!!dlProgress}
-        className="text-xs px-3 py-0.5 rounded-full bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 font-medium"
+        className={`text-xs px-3 py-0.5 rounded-full font-medium disabled:opacity-50 ${
+          updateError
+            ? 'bg-gray-600 text-white hover:bg-gray-700'
+            : 'bg-blue-600 text-white hover:bg-blue-700'
+        }`}
       >
-        {dlProgress || 'Update'}
+        {dlProgress || (updateError ? 'Retry' : 'Update')}
       </button>
     </div>
   )
