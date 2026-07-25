@@ -67,6 +67,7 @@ export default function Dashboard({ items, scanning, cleaning, onClean, lastScan
               </div>
             )
           })}
+          <p className="text-[10px] text-gray-400 mt-1">{drives.length} drive(s) detected</p>
         </div>
       )}
 
