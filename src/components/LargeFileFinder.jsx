@@ -9,6 +9,7 @@ export default function LargeFileFinder() {
   const [deleting, setDeleting] = useState(false)
   const [scanned, setScanned] = useState(false)
   const [sortAsc, setSortAsc] = useState(false)
+  const [ctxMenu, setCtxMenu] = useState(null)
 
   useEffect(() => {
     ;(async () => {
@@ -51,6 +52,12 @@ export default function LargeFileFinder() {
     } catch {}
     setDeleting(false)
   }
+
+  useEffect(() => {
+    const handler = () => setCtxMenu(null)
+    if (ctxMenu) window.addEventListener('click', handler)
+    return () => window.removeEventListener('click', handler)
+  }, [ctxMenu])
 
   return (
     <div className="flex flex-col h-full">
@@ -149,6 +156,10 @@ export default function LargeFileFinder() {
             <div
               key={i}
               onClick={() => toggleFile(file.path)}
+              onContextMenu={e => {
+                e.preventDefault()
+                setCtxMenu({ x: e.clientX, y: e.clientY, file: file.path })
+              }}
               className={`flex items-center gap-2 bg-white dark:bg-gray-800 rounded-lg px-3 py-2 border cursor-pointer transition-all ${
                 selected.has(file.path)
                   ? 'border-emerald-400 dark:border-emerald-600 ring-1 ring-emerald-400/30'
@@ -194,6 +205,32 @@ export default function LargeFileFinder() {
               <p className="text-sm text-gray-400">Pick a drive and hit Scan</p>
             </div>
           )}
+        </div>
+      )}
+
+      {ctxMenu && (
+        <div
+          className="fixed z-50 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 py-1 text-xs min-w-[140px]"
+          style={{ left: ctxMenu.x, top: ctxMenu.y }}
+        >
+          <button
+            onClick={() => { window.sweep.openLocation(ctxMenu.file); setCtxMenu(null) }}
+            className="w-full text-left px-3 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
+          >
+            📂 Open location
+          </button>
+          <button
+            onClick={() => { navigator.clipboard.writeText(ctxMenu.file); setCtxMenu(null) }}
+            className="w-full text-left px-3 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
+          >
+            📋 Copy path
+          </button>
+          <button
+            onClick={() => { toggleFile(ctxMenu.file); setCtxMenu(null) }}
+            className="w-full text-left px-3 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600"
+          >
+            🗑️ Select for delete
+          </button>
         </div>
       )}
     </div>

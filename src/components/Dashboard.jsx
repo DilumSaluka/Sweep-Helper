@@ -2,9 +2,14 @@
 
 export default function Dashboard({ items, scanning, cleaning, onClean, lastScan }) {
   const [sysInfo, setSysInfo] = useState(null)
+  const [drives, setDrives] = useState([])
 
   useEffect(() => {
     window.sweep.getSystemInfo().then(setSysInfo)
+  }, [])
+
+  useEffect(() => {
+    window.sweep.listDrives().then(setDrives)
   }, [])
 
   const totalSize = items.reduce((sum, i) => sum + i.size, 0)
@@ -39,6 +44,24 @@ export default function Dashboard({ items, scanning, cleaning, onClean, lastScan
         <div className="text-center py-6">
           <p className="text-lg">✨ Your PC looks clean!</p>
           <p className="text-xs text-gray-400 mt-1">Nothing to sweep right now.</p>
+        </div>
+      )}
+
+      {drives.length > 0 && (
+        <div className="border-t border-gray-100 dark:border-gray-700 pt-3 mt-1">
+          <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-2">Drives</p>
+          {drives.map(d => {
+            const pct = d.total > 0 ? ((d.total - d.free) / d.total * 100).toFixed(0) : 0
+            return (
+              <div key={d.root} className="flex items-center gap-2 mb-1.5">
+                <span className="text-xs font-medium w-6 shrink-0">{d.root}</span>
+                <div className="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                  <div className="h-full bg-blue-500 dark:bg-blue-400 rounded-full" style={{ width: `${pct}%` }} />
+                </div>
+                <span className="text-[10px] text-gray-400 w-24 text-right shrink-0">{formatSize(d.free)} free</span>
+              </div>
+            )
+          })}
         </div>
       )}
 

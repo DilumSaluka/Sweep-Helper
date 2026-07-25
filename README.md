@@ -4,7 +4,7 @@
 
 **Clean your PC in one click. No ads. No telemetry. No bloat.**
 
-Sweep Helper is a free, open-source Windows cleaner that removes temporary files, browser cache, and Recycle Bin junk — all from a beautiful, friendly interface. No confusing settings, no upgrade popups, just one big button. Also includes an **app uninstaller** and **large file finder**.
+Sweep Helper is a free, open-source Windows cleaner that removes temporary files, browser cache, and Recycle Bin junk — all from a beautiful, friendly interface. No confusing settings, no upgrade popups, just one big button. Also includes an **app uninstaller**, **large file finder**, **startup manager**, and **duplicate file finder**.
 
 Created by **[Dilum Saluka](https://github.com/DilumSaluka)**.
 
@@ -16,9 +16,9 @@ Get the latest installer from the **[Releases page](https://github.com/DilumSalu
 
 | Version | Download | Size |
 |---------|----------|------|
-| **v1.1 (latest)** | [Sweep Helper Setup 1.1.0.exe](https://github.com/DilumSaluka/Sweep-Helper/releases/download/v1.1/Sweep.Helper.Setup.1.1.0.exe) | ~77 MB |
-| **v1.1 (portable)** | [Sweep-Helper-Portable-1.1.0.zip](https://github.com/DilumSaluka/Sweep-Helper/releases/download/v1.1/Sweep-Helper-Portable-1.1.0.zip) | ~77 MB |
-| v1.0 | [Release page](https://github.com/DilumSaluka/Sweep-Helper/releases/tag/v1.0) | — |
+| **v1.3 (latest)** | [Sweep Helper Setup 1.3.0.exe](https://github.com/DilumSaluka/Sweep-Helper/releases/download/v1.3/Sweep.Helper.Setup.1.3.0.exe) | ~80 MB |
+| **v1.3 (portable)** | [Sweep-Helper-Portable-1.3.0.zip](https://github.com/DilumSaluka/Sweep-Helper/releases/download/v1.3/Sweep-Helper-Portable-1.3.0.zip) | ~80 MB |
+| v1.2 | [Release page](https://github.com/DilumSaluka/Sweep-Helper/releases/tag/v1.2) | — |
 
 > Windows 10/11 only. No admin required for portable version.
 
@@ -38,6 +38,13 @@ Get the latest installer from the **[Releases page](https://github.com/DilumSalu
 | 🔒 **No Tracking** | Zero telemetry, zero ads, zero analytics |
 | 🗑️ **App Uninstaller** | Browse and uninstall installed programs from the app |
 | 📂 **Large File Finder** | Find files over 100 MB across your PC and delete with undo |
+| 🔄 **Check for Updates** | Manual update check button in the title bar |
+| 💾 **Drive Overview** | See all drives with usage bars from the Cleaner tab |
+| 📂 **Context Menu** | Right-click any large file to open location, copy path, or delete |
+| ↩️ **Restore Button** | Restore last cleanup from the results screen |
+| 📋 **Copy File Path** | One-click copy on any duplicate file |
+| 🔍 **Invert Selection** | Flip your selection in the Duplicate Finder |
+| 🖥️ **PC Info** | See OS version and total RAM in the dashboard |
 
 ---
 

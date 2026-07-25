@@ -92,6 +92,13 @@ export default function App() {
     scan()
   }
 
+  const handleCheckUpdate = async () => {
+    try {
+      const info = await window.sweep.checkUpdate()
+      if (info.available) setUpdateInfo(info)
+    } catch {}
+  }
+
   const handleUpdate = async () => {
     if (!updateInfo?.url) return
     setDlProgress('Downloading...')
@@ -129,7 +136,7 @@ export default function App() {
         <div className="drag flex items-center justify-between px-5 py-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-2">
             <span className="text-lg">🧹</span>
-            <span className="font-semibold text-sm tracking-tight">Sweep Helper <span className="font-normal text-[10px] text-gray-400">v1.2</span></span>
+            <span className="font-semibold text-sm tracking-tight">Sweep Helper <span className="font-normal text-[10px] text-gray-400">v1.3</span></span>
           </div>
           <div className="no-drag flex items-center gap-2">
             {canUndo && tab === 'clean' && (
@@ -137,6 +144,7 @@ export default function App() {
                 ↩ Undo
               </button>
             )}
+            <button title="Check for Updates" onClick={handleCheckUpdate} className="text-xs text-gray-400 hover:text-blue-500">🔄</button>
             <ThemeToggle dark={dark} onToggle={() => setDark(!dark)} />
             <button title="Minimize" onClick={() => window.sweep.minimizeWindow()} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-lg leading-none">─</button>
             <button title="Close (Esc)" onClick={() => window.sweep.closeWindow()} className="text-gray-400 hover:text-red-500 text-lg leading-none">✕</button>
