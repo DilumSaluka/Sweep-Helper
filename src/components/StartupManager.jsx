@@ -42,13 +42,23 @@ export default function StartupManager() {
 
   return (
     <div className="flex flex-col h-full">
-      <input
-        type="text"
-        placeholder="Search by name or command..."
-        value={search}
-        onChange={e => setSearch(e.target.value)}
-        className="mb-2 px-3 py-2 text-xs rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-amber-500"
-      />
+      <div className="relative mb-2">
+        <input
+          type="text"
+          placeholder="Search by name or command..."
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          className="w-full px-3 py-2 text-xs rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-amber-500 pr-8"
+        />
+        {search && (
+          <button
+            onClick={() => setSearch('')}
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-sm leading-none"
+          >
+            ✕
+          </button>
+        )}
+      </div>
       <p className="text-xs text-gray-400 mb-2">{filtered.length} of {items.length} startup {items.length === 1 ? 'item' : 'items'}</p>
       <div className="flex-1 overflow-y-auto space-y-1">
         {filtered.map((item, i) => (
