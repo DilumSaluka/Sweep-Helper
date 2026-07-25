@@ -209,6 +209,8 @@ export default function App() {
         </div>
         <div className="no-drag flex items-center justify-center gap-2 text-[10px] text-gray-400 pb-2">
           <span>© 2026 Dilum Saluka</span>
+          <span>·</span>
+          <a href="https://github.com/DilumSaluka/Sweep-Helper/issues" target="_blank" className="hover:text-blue-500">Feedback</a>
           {!isAdmin && <span className="text-amber-500">⚠️ Limited mode</span>}
         </div>
       </div>
