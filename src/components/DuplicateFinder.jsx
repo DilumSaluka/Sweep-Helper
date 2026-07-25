@@ -10,6 +10,7 @@ export default function DuplicateFinder() {
   const [deleting, setDeleting] = useState(false)
   const [scanned, setScanned] = useState(false)
   const [progress, setProgress] = useState('')
+  const [sortByNameAsc, setSortByNameAsc] = useState(true)
 
   useEffect(() => {
     ;(async () => {
@@ -69,6 +70,16 @@ export default function DuplicateFinder() {
       setChecked(new Map())
     } catch {}
     setDeleting(false)
+  }
+
+  const handleSortByName = () => {
+    const nextAsc = !sortByNameAsc
+    setSortByNameAsc(nextAsc)
+    setGroups(prev => [...prev].sort((a, b) => {
+      const nameA = a.files[0].split('\\').pop().toLowerCase()
+      const nameB = b.files[0].split('\\').pop().toLowerCase()
+      return nextAsc ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA)
+    }))
   }
 
   const checkedCount = checked.size
@@ -158,6 +169,13 @@ export default function DuplicateFinder() {
               className="px-2 py-1 rounded-lg text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700"
             >
               Keep Oldest
+            </button>
+            <button
+              onClick={handleSortByName}
+              className="px-2 py-1 rounded-lg text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700"
+              title={sortByNameAsc ? 'Sorted A-Z' : 'Sorted Z-A'}
+            >
+              Name {sortByNameAsc ? '↑' : '↓'}
             </button>
           </div>
         )}
