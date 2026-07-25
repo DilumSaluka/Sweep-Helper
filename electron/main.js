@@ -81,8 +81,12 @@ ipcMain.handle('clean:items', async (_event, items) => {
 })
 
 ipcMain.handle('undo:last', async () => {
-  await safeBin.restoreLast()
-  return { success: true }
+  try {
+    await safeBin.restoreLast()
+    return { success: true }
+  } catch (e) {
+    return { success: false, error: e.message }
+  }
 })
 
 ipcMain.handle('safe-bin:exists', async () => {
@@ -106,7 +110,11 @@ ipcMain.handle('uninstall:list', async () => {
 })
 
 ipcMain.handle('uninstall:run', async (_event, app) => {
-  return uninstallApps.uninstall(app)
+  try {
+    return await uninstallApps.uninstall(app)
+  } catch (e) {
+    return { success: false, error: e.message }
+  }
 })
 
 ipcMain.handle('startup:list', async () => {
@@ -155,6 +163,7 @@ ipcMain.handle('update:download', async (_event, url) => {
     const res = await net.fetch(url)
     if (!res.ok) return { success: false, error: `HTTP ${res.status}` }
     const buffer = Buffer.from(await res.arrayBuffer())
+    fs.mkdirSync(tempDir, { recursive: true })
     fs.writeFileSync(dest, buffer)
     return { success: true, path: dest }
   } catch (e) { return { success: false, error: e.message } }
@@ -174,14 +183,20 @@ ipcMain.handle('system:info', async () => {
 })
 
 ipcMain.handle('shell:openRestore', async () => {
-  shell.openPath(path.join(os.homedir(), '.sweep-helper-restore'))
+  try {
+    await shell.openPath(path.join(os.homedir(), '.sweep-helper-restore'))
+  } catch (e) { console.error('Failed to open restore folder:', e.message) }
 })
 
 ipcMain.handle('shell:openLocation', async (_event, filePath) => {
-  shell.showItemInFolder(filePath)
+  try {
+    shell.showItemInFolder(filePath)
+  } catch (e) { console.error('Failed to open location:', e.message) }
 })
 
 ipcMain.handle('update:install', async (_event, installerPath) => {
-  shell.openPath(installerPath)
+  try {
+    await shell.openPath(installerPath)
+  } catch (e) { console.error('Failed to open installer:', e.message) }
   app.quit()
 })
