@@ -106,7 +106,29 @@ export default function LargeFileFinder() {
         <p className="text-xs text-gray-400">
           {scanned ? `${files.length} files >100MB` : 'Select a drive and scan'}
         </p>
-        <div className="flex gap-1">
+        <div className="flex gap-1 flex-wrap">
+          {scanned && files.length > 0 && (
+            <>
+              <button
+                onClick={() => setSelected(new Set(files.filter(f => f.size > 1_073_741_824).map(f => f.path)))}
+                className="px-2 py-1 rounded-lg text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700"
+              >
+                &gt;1GB
+              </button>
+              <button
+                onClick={() => setSelected(new Set(files.filter(f => f.size > 524_288_000).map(f => f.path)))}
+                className="px-2 py-1 rounded-lg text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700"
+              >
+                &gt;500MB
+              </button>
+              <button
+                onClick={() => setSelected(new Set(files.filter(f => f.size > 209_715_200).map(f => f.path)))}
+                className="px-2 py-1 rounded-lg text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700"
+              >
+                &gt;200MB
+              </button>
+            </>
+          )}
           {scanned && files.length > 0 && (
             <button
               onClick={() => setSortAsc(!sortAsc)}

@@ -146,6 +146,21 @@ export default function DuplicateFinder() {
             >
               Invert
             </button>
+            <button
+              onClick={() => {
+                const oldest = new Map()
+                groups.forEach((g, i) => {
+                  const sorted = [...g.files].sort()
+                  for (let j = 1; j < sorted.length; j++) {
+                    oldest.set(`${i}::${sorted[j]}`, sorted[j])
+                  }
+                })
+                setChecked(oldest)
+              }}
+              className="px-2 py-1 rounded-lg text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700"
+            >
+              Keep Oldest
+            </button>
           </div>
         )}
         {checkedCount > 0 && (
