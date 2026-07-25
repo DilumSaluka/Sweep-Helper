@@ -47,6 +47,7 @@ export default function UninstallManager() {
         onChange={e => setSearch(e.target.value)}
         className="mb-3 px-3 py-2 text-xs rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
       />
+      <p className="text-[10px] text-gray-400">{apps.length} app(s) installed</p>
       <div className="flex-1 overflow-y-auto space-y-1">
         {filtered.map((app, i) => (
           <div key={i} className="flex items-center justify-between bg-white dark:bg-gray-800 rounded-lg px-3 py-2 border border-gray-100 dark:border-gray-700">
