@@ -11,6 +11,7 @@ export default function LargeFileFinder() {
   const [sortAsc, setSortAsc] = useState(false)
   const [ctxMenu, setCtxMenu] = useState(null)
   const [scanProgress, setScanProgress] = useState(0)
+  const [typeCounts, setTypeCounts] = useState(null)
   const [scanStartTime, setScanStartTime] = useState(null)
   const [elapsed, setElapsed] = useState(0)
 
@@ -43,6 +44,12 @@ export default function LargeFileFinder() {
     try {
       const data = await window.sweep.scanLargeFiles(selectedDrive)
       setFiles(data)
+      const counts = {}
+      data.forEach(f => {
+        const ext = (f.path.split('.').pop() || 'none').toLowerCase()
+        counts[ext] = (counts[ext] || 0) + 1
+      })
+      setTypeCounts(counts)
     } catch {}
     clearInterval(progressInterval)
     clearInterval(elapsedInterval)
@@ -122,6 +129,13 @@ export default function LargeFileFinder() {
         <p className="text-xs text-gray-400">
           {scanned ? `${files.length} files >100MB` : 'Select a drive and scan'}
         </p>
+        {typeCounts && (
+          <div className="flex flex-wrap gap-1 mb-1">
+            {Object.entries(typeCounts).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([ext, count]) => (
+              <span key={ext} className="text-[10px] px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-gray-500">.{ext} ×{count}</span>
+            ))}
+          </div>
+        )}
         <div className="flex gap-1 flex-wrap">
           {scanned && files.length > 0 && (
             <>
