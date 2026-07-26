@@ -4,6 +4,7 @@ contextBridge.exposeInMainWorld('sweep', {
   createRestorePoint: () => ipcRenderer.invoke('system:restorePoint'),
   closeWindow: () => ipcRenderer.invoke('window:close'),
   minimizeWindow: () => ipcRenderer.invoke('window:minimize'),
+  showWindow: () => ipcRenderer.invoke('window:show'),
   scanDisk: () => ipcRenderer.invoke('scan:disk'),
   cleanItems: (items) => ipcRenderer.invoke('clean:items', items),
   undoLast: () => ipcRenderer.invoke('undo:last'),

@@ -13,6 +13,8 @@ const duplicateFinder = require('./cleaners/duplicate-finder')
 
 let mainWindow = null
 
+app.isQuitting = false
+
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 520,
@@ -34,6 +36,28 @@ function createWindow() {
   } else {
     mainWindow.loadFile(path.join(__dirname, '..', 'dist', 'index.html'))
   }
+
+  mainWindow.on('close', (e) => {
+    if (!app.isQuitting) {
+      e.preventDefault()
+      mainWindow?.hide()
+    }
+  })
+}
+
+let tray = null
+function createTray() {
+  const { Tray, Menu, nativeImage } = require('electron')
+  const iconPath = path.join(__dirname, '..', 'assets', 'icon.png')
+  try {
+    tray = new Tray(nativeImage.createFromPath(iconPath).resize({ width: 16, height: 16 }))
+    tray.setToolTip('Sweep Helper')
+    tray.setContextMenu(Menu.buildFromTemplate([
+      { label: 'Show', click: () => { mainWindow?.show() } },
+      { label: 'Quit', click: () => { app.isQuitting = true; app.quit() } }
+    ]))
+    tray.on('double-click', () => mainWindow?.show())
+  } catch {}
 }
 
 process.on('uncaughtException', (err) => {
@@ -46,6 +70,7 @@ process.on('unhandledRejection', (err) => {
 
 app.whenReady().then(() => {
   createWindow()
+  createTray()
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
@@ -58,6 +83,7 @@ app.on('window-all-closed', () => {
 
 ipcMain.handle('window:close', () => mainWindow?.close())
 ipcMain.handle('window:minimize', () => mainWindow?.minimize())
+ipcMain.handle('window:show', () => mainWindow?.show())
 ipcMain.handle('window:isMaximized', () => mainWindow?.isMaximized())
 
 ipcMain.handle('scan:disk', async () => {
