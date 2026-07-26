@@ -243,6 +243,21 @@ ipcMain.handle('system:info', async () => {
   }
 })
 
+ipcMain.handle('export:duplicates', async (_event, groups) => {
+  try {
+    const desktop = app.getPath('desktop')
+    let content = `Sweep Helper Duplicate Files Report\n${'='.repeat(40)}\nDate: ${new Date().toLocaleString()}\n${'='.repeat(40)}\n\n`
+    groups.forEach((g, i) => {
+      content += `Group ${i + 1}: ${g.files[0].split('\\').pop()} (${g.size} bytes)\n`
+      g.files.forEach(f => { content += `  - ${f}\n` })
+      content += '\n'
+    })
+    const filePath = path.join(desktop, `sweep-duplicates-${Date.now()}.txt`)
+    fs.writeFileSync(filePath, content, 'utf-8')
+    return { success: true, path: filePath }
+  } catch (e) { return { success: false, error: e.message } }
+})
+
 ipcMain.handle('export:report', async (_event, { freed, count, date }) => {
   try {
     const desktop = app.getPath('desktop')

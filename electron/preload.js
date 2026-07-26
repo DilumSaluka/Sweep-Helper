@@ -28,5 +28,6 @@ contextBridge.exposeInMainWorld('sweep', {
   checkUpdate: () => ipcRenderer.invoke('update:check'),
   downloadUpdate: (url) => ipcRenderer.invoke('update:download', url),
   installUpdate: (path) => ipcRenderer.invoke('update:install', path),
-  exportReport: (data) => ipcRenderer.invoke('export:report', data)
+  exportReport: (data) => ipcRenderer.invoke('export:report', data),
+  exportDuplicates: (groups) => ipcRenderer.invoke('export:duplicates', groups)
 })
