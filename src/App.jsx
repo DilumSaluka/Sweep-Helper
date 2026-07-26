@@ -52,17 +52,8 @@ export default function App() {
   }, [dark])
 
   useEffect(() => {
-    localStorage.setItem('sweep-tab', tab)
-  }, [tab])
-
-  useEffect(() => {
-    const handler = (e) => {
-      if (e.key === 'Escape' || (e.ctrlKey && e.key === 'w')) window.sweep.closeWindow()
-      if (e.ctrlKey && e.key === 'r') { e.preventDefault(); if (tab === 'clean') scan() }
-    }
-    window.addEventListener('keydown', handler)
-    return () => window.removeEventListener('keydown', handler)
-  }, [tab, scan])
+    document.documentElement.classList.toggle('dark', dark)
+  }, [dark])
 
   useEffect(() => {
     ;(async () => {
@@ -95,6 +86,15 @@ export default function App() {
   }, [])
 
   useEffect(() => { if (tab === 'clean') scan() }, [tab, scan])
+
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.key === 'Escape' || (e.ctrlKey && e.key === 'w')) window.sweep.closeWindow()
+      if (e.ctrlKey && e.key === 'r') { e.preventDefault(); if (tab === 'clean') scan() }
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [tab, scan])
 
   const handleClean = useCallback(async () => {
     const total = items.reduce((sum, i) => sum + i.size, 0)
