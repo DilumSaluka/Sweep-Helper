@@ -16,9 +16,9 @@ Get the latest installer from the **[Releases page](https://github.com/DilumSalu
 
 | Version | Download | Size |
 |---------|----------|------|
-| **v1.3 (latest)** | [Sweep Helper Setup 1.3.0.exe](https://github.com/DilumSaluka/Sweep-Helper/releases/download/v1.3/Sweep.Helper.Setup.1.3.0.exe) | ~80 MB |
-| **v1.3 (portable)** | [Sweep-Helper-Portable-1.3.0.zip](https://github.com/DilumSaluka/Sweep-Helper/releases/download/v1.3/Sweep-Helper-Portable-1.3.0.zip) | ~80 MB |
-| v1.2 | [Release page](https://github.com/DilumSaluka/Sweep-Helper/releases/tag/v1.2) | — |
+| **v1.4 (latest)** | [Sweep Helper Setup 1.4.0.exe](https://github.com/DilumSaluka/Sweep-Helper/releases/download/v1.4/Sweep.Helper.Setup.1.4.0.exe) | ~80 MB |
+| **v1.4 (portable)** | [Sweep-Helper-Portable-1.4.0.zip](https://github.com/DilumSaluka/Sweep-Helper/releases/download/v1.4/Sweep-Helper-Portable-1.4.0.zip) | ~80 MB |
+| v1.3 | [Release page](https://github.com/DilumSaluka/Sweep-Helper/releases/tag/v1.3) | — |
 
 > Windows 10/11 only. No admin required for portable version.
 
@@ -45,6 +45,16 @@ Get the latest installer from the **[Releases page](https://github.com/DilumSalu
 | 📋 **Copy File Path** | One-click copy on any duplicate file |
 | 🔍 **Invert Selection** | Flip your selection in the Duplicate Finder |
 | 🖥️ **PC Info** | See OS version and total RAM in the dashboard |
+| 🛡️ **System Restore** | Creates a system restore point before sweeping |
+| 💾 **Minimize to Tray** | Minimize to tray instead of quit — double-click tray icon to restore |
+| ⚡ **Auto-Start** | Toggle auto-start with Windows from the title bar |
+| 💾 **Settings Persistence** | Dark mode and last tab remembered across sessions |
+| 🗂️ **File Type Breakdown** | See file type distribution chips in Large File Finder |
+| 📄 **Export Reports** | Export sweep/duplicate report as .txt to Desktop |
+| 🔍 **Search/Filter** | Search and filter bars in Uninstall & Startup managers |
+| 📝 **Search Counts** | See "X of Y" search result counts |
+| 🎉 **What's New Dialog** | What's New dialog on first launch after update |
+| 🎨 **Visual Polish** | Better layout, spacing, and consistent design throughout |
 
 ---
 
