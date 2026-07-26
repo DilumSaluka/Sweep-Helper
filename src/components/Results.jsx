@@ -45,6 +45,18 @@ export default function Results({ freed, count, onRestart }) {
         📂 Open restore folder
       </button>
       <button
+        onClick={async () => {
+          await window.sweep.exportReport({
+            freed: formatSize(freed),
+            count,
+            date: new Date().toLocaleString()
+          })
+        }}
+        className="px-3 py-1.5 text-xs font-medium rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 transition-all"
+      >
+        📄 Export report
+      </button>
+      <button
         onClick={onRestart}
         className="px-4 py-2 text-xs font-medium rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 transition-all"
       >

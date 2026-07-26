@@ -62,6 +62,7 @@ export default function Dashboard({ items, scanning, cleaning, onClean, lastScan
             const pct = d.total > 0 ? ((d.total - d.free) / d.total * 100).toFixed(0) : 0
             return (
               <div key={d.root} className="flex items-center gap-2 mb-1.5">
+                <div className="w-4 h-4 rounded-full shrink-0" style={{ background: `conic-gradient(#3b82f6 ${pct}%, #e5e7eb ${pct}%)` }} />
                 <span className="text-xs font-medium w-6 shrink-0">{d.root}</span>
                 <div className="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                   <div className="h-full bg-blue-500 dark:bg-blue-400 rounded-full" style={{ width: `${pct}%` }} />
