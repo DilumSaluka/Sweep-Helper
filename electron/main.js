@@ -13,6 +13,8 @@ const duplicateFinder = require('./cleaners/duplicate-finder')
 
 let mainWindow = null
 
+app.isQuitting = false
+
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 520,
@@ -34,6 +36,28 @@ function createWindow() {
   } else {
     mainWindow.loadFile(path.join(__dirname, '..', 'dist', 'index.html'))
   }
+
+  mainWindow.on('close', (e) => {
+    if (!app.isQuitting) {
+      e.preventDefault()
+      mainWindow?.hide()
+    }
+  })
+}
+
+let tray = null
+function createTray() {
+  const { Tray, Menu, nativeImage } = require('electron')
+  const iconPath = path.join(__dirname, '..', 'assets', 'icon.png')
+  try {
+    tray = new Tray(nativeImage.createFromPath(iconPath).resize({ width: 16, height: 16 }))
+    tray.setToolTip('Sweep Helper')
+    tray.setContextMenu(Menu.buildFromTemplate([
+      { label: 'Show', click: () => { mainWindow?.show() } },
+      { label: 'Quit', click: () => { app.isQuitting = true; app.quit() } }
+    ]))
+    tray.on('double-click', () => mainWindow?.show())
+  } catch {}
 }
 
 process.on('uncaughtException', (err) => {
@@ -46,6 +70,7 @@ process.on('unhandledRejection', (err) => {
 
 app.whenReady().then(() => {
   createWindow()
+  createTray()
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
@@ -58,6 +83,7 @@ app.on('window-all-closed', () => {
 
 ipcMain.handle('window:close', () => mainWindow?.close())
 ipcMain.handle('window:minimize', () => mainWindow?.minimize())
+ipcMain.handle('window:show', () => mainWindow?.show())
 ipcMain.handle('window:isMaximized', () => mainWindow?.isMaximized())
 
 ipcMain.handle('scan:disk', async () => {
@@ -143,6 +169,13 @@ ipcMain.handle('duplicate:delete', async (_event, paths) => {
   return duplicateFinder.deleteFiles(paths)
 })
 
+ipcMain.handle('system:restorePoint', async () => {
+  try {
+    require('child_process').execSync('powershell.exe -Command "Checkpoint-Computer -Description \'Sweep Helper cleanup\' -RestorePointType MODIFY_SETTINGS"', { timeout: 30000 })
+    return { success: true }
+  } catch (e) { return { success: false, error: e.message } }
+})
+
 const GITHUB_REPO = 'DilumSaluka/Sweep-Helper'
 const UPDATE_URL = `https://api.github.com/repos/${GITHUB_REPO}/releases/latest`
 
@@ -172,6 +205,28 @@ ipcMain.handle('update:download', async (_event, url) => {
     fs.mkdirSync(tempDir, { recursive: true })
     fs.writeFileSync(dest, buffer)
     return { success: true, path: dest }
+  } catch (e) { return { success: false, error: e.message } }
+})
+
+ipcMain.handle('autostart:get', async () => {
+  try {
+    const res = require('child_process').execSync(
+      'reg query "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run" /v "SweepHelper" 2>nul',
+      { timeout: 3000 }
+    ).toString()
+    return res.includes('SweepHelper')
+  } catch { return false }
+})
+
+ipcMain.handle('autostart:set', async (_event, enable) => {
+  try {
+    const exePath = app.getPath('exe')
+    if (enable) {
+      require('child_process').execSync(`reg add "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run" /v "SweepHelper" /t REG_SZ /d "${exePath}" /f`, { timeout: 3000 })
+    } else {
+      require('child_process').execSync(`reg delete "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run" /v "SweepHelper" /f 2>nul`, { timeout: 3000 })
+    }
+    return { success: true }
   } catch (e) { return { success: false, error: e.message } }
 })
 

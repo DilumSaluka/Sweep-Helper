@@ -1,8 +1,10 @@
 ﻿const { contextBridge, ipcRenderer } = require('electron')
 
 contextBridge.exposeInMainWorld('sweep', {
+  createRestorePoint: () => ipcRenderer.invoke('system:restorePoint'),
   closeWindow: () => ipcRenderer.invoke('window:close'),
   minimizeWindow: () => ipcRenderer.invoke('window:minimize'),
+  showWindow: () => ipcRenderer.invoke('window:show'),
   scanDisk: () => ipcRenderer.invoke('scan:disk'),
   cleanItems: (items) => ipcRenderer.invoke('clean:items', items),
   undoLast: () => ipcRenderer.invoke('undo:last'),
@@ -20,6 +22,8 @@ contextBridge.exposeInMainWorld('sweep', {
   getSystemInfo: () => ipcRenderer.invoke('system:info'),
   openRestore: () => ipcRenderer.invoke('shell:openRestore'),
   openLocation: (path) => ipcRenderer.invoke('shell:openLocation', path),
+  getAutostart: () => ipcRenderer.invoke('autostart:get'),
+  setAutostart: (enable) => ipcRenderer.invoke('autostart:set', enable),
   isAdmin: () => ipcRenderer.invoke('app:isAdmin'),
   checkUpdate: () => ipcRenderer.invoke('update:check'),
   downloadUpdate: (url) => ipcRenderer.invoke('update:download', url),

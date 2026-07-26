@@ -16,8 +16,11 @@ const TABS = [
 ]
 
 export default function App() {
-  const [dark, setDark] = useState(true)
-  const [tab, setTab] = useState('clean')
+  const [dark, setDark] = useState(() => {
+    const saved = localStorage.getItem('sweep-dark')
+    return saved !== null ? JSON.parse(saved) : true
+  })
+  const [tab, setTab] = useState(() => localStorage.getItem('sweep-tab') || 'clean')
   const [items, setItems] = useState([])
   const [scanning, setScanning] = useState(true)
   const [cleaning, setCleaning] = useState(false)
@@ -29,10 +32,19 @@ export default function App() {
   const [updateError, setUpdateError] = useState(null)
   const [showAbout, setShowAbout] = useState(false)
   const [isAdmin, setIsAdmin] = useState(true)
+  const [autoStart, setAutoStart] = useState(false)
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', dark)
   }, [dark])
+
+  useEffect(() => {
+    localStorage.setItem('sweep-dark', JSON.stringify(dark))
+  }, [dark])
+
+  useEffect(() => {
+    localStorage.setItem('sweep-tab', tab)
+  }, [tab])
 
   useEffect(() => {
     const handler = (e) => {
@@ -56,6 +68,10 @@ export default function App() {
     window.sweep.isAdmin().then(setIsAdmin).catch(() => {})
   }, [])
 
+  useEffect(() => {
+    window.sweep.getAutostart().then(setAutoStart).catch(() => {})
+  }, [])
+
   const scan = useCallback(async () => {
     setScanning(true)
     setResults(null)
@@ -77,6 +93,7 @@ export default function App() {
     if (total > 500 * 1024 * 1024) {
       if (!window.confirm(`Sweep ${sizeLabel} of files? This will free a lot of space.`)) return
     }
+    try { await window.sweep.createRestorePoint() } catch {}
     setCleaning(true)
     const before = total
     try {
@@ -165,6 +182,17 @@ export default function App() {
             )}
             <button title="Check for Updates" onClick={handleCheckUpdate} className="text-xs text-gray-400 hover:text-blue-500">🔄</button>
             <ThemeToggle dark={dark} onToggle={() => setDark(!dark)} />
+            <button
+              title={autoStart ? 'Auto-start on' : 'Auto-start off'}
+              onClick={async () => {
+                const next = !autoStart
+                await window.sweep.setAutostart(next)
+                setAutoStart(next)
+              }}
+              className={`text-xs ${autoStart ? 'text-green-500' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
+            >
+              ⚡
+            </button>
             <button title="Minimize" onClick={() => window.sweep.minimizeWindow()} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-lg leading-none">─</button>
             <button title="Close (Esc)" onClick={() => window.sweep.closeWindow()} className="text-gray-400 hover:text-red-500 text-lg leading-none">✕</button>
           </div>
