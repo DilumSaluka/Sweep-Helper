@@ -210,6 +210,7 @@ export default function LargeFileFinder() {
             <div
               key={i}
               onClick={() => toggleFile(file.path)}
+              onDoubleClick={() => window.sweep.openLocation(file.path)}
               onContextMenu={e => {
                 e.preventDefault()
                 setCtxMenu({ x: e.clientX, y: e.clientY, file: file.path })

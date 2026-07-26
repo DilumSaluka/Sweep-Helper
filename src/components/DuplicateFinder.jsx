@@ -59,6 +59,7 @@ export default function DuplicateFinder() {
 
   const handleDelete = async () => {
     const paths = [...checked.values()]
+    if (paths.length >= 5 && !window.confirm(`Delete ${paths.length} duplicate files? This action can be undone (files go to restore folder).`)) return
     if (paths.length === 0) return
     setDeleting(true)
     try {
@@ -169,6 +170,12 @@ export default function DuplicateFinder() {
               className="px-2 py-1 rounded-lg text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700"
             >
               Keep Oldest
+            </button>
+            <button
+              onClick={() => setExpanded(new Set())}
+              className="px-2 py-1 rounded-lg text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700"
+            >
+              Collapse
             </button>
             <button
               onClick={handleSortByName}
