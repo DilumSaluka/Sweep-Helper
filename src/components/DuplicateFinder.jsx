@@ -59,6 +59,7 @@ export default function DuplicateFinder() {
 
   const handleDelete = async () => {
     const paths = [...checked.values()]
+    if (paths.length >= 5 && !window.confirm(`Delete ${paths.length} duplicate files? This action can be undone (files go to restore folder).`)) return
     if (paths.length === 0) return
     setDeleting(true)
     try {
