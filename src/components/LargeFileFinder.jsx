@@ -181,6 +181,16 @@ export default function LargeFileFinder() {
           )}
           {selected.size > 0 && (
             <button
+              onClick={() => {
+                navigator.clipboard.writeText([...selected].join('\n'))
+              }}
+              className="px-2 py-1 rounded-lg text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700"
+            >
+              📋 Copy paths
+            </button>
+          )}
+          {selected.size > 0 && (
+            <button
               onClick={handleDelete}
               disabled={deleting}
               className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${
