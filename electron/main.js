@@ -34,7 +34,7 @@ function createWindow() {
     height: 680,
     resizable: false,
     frame: false,
-    transparent: true,
+    backgroundColor: '#111827',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
