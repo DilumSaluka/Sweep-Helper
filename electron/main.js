@@ -143,6 +143,13 @@ ipcMain.handle('duplicate:delete', async (_event, paths) => {
   return duplicateFinder.deleteFiles(paths)
 })
 
+ipcMain.handle('system:restorePoint', async () => {
+  try {
+    require('child_process').execSync('powershell.exe -Command "Checkpoint-Computer -Description \'Sweep Helper cleanup\' -RestorePointType MODIFY_SETTINGS"', { timeout: 30000 })
+    return { success: true }
+  } catch (e) { return { success: false, error: e.message } }
+})
+
 const GITHUB_REPO = 'DilumSaluka/Sweep-Helper'
 const UPDATE_URL = `https://api.github.com/repos/${GITHUB_REPO}/releases/latest`
 

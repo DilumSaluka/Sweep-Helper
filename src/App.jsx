@@ -77,6 +77,7 @@ export default function App() {
     if (total > 500 * 1024 * 1024) {
       if (!window.confirm(`Sweep ${sizeLabel} of files? This will free a lot of space.`)) return
     }
+    try { await window.sweep.createRestorePoint() } catch {}
     setCleaning(true)
     const before = total
     try {

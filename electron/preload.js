@@ -1,6 +1,7 @@
 ﻿const { contextBridge, ipcRenderer } = require('electron')
 
 contextBridge.exposeInMainWorld('sweep', {
+  createRestorePoint: () => ipcRenderer.invoke('system:restorePoint'),
   closeWindow: () => ipcRenderer.invoke('window:close'),
   minimizeWindow: () => ipcRenderer.invoke('window:minimize'),
   scanDisk: () => ipcRenderer.invoke('scan:disk'),
