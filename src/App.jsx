@@ -32,6 +32,7 @@ export default function App() {
   const [updateError, setUpdateError] = useState(null)
   const [showAbout, setShowAbout] = useState(false)
   const [isAdmin, setIsAdmin] = useState(true)
+  const [autoStart, setAutoStart] = useState(false)
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', dark)
@@ -65,6 +66,10 @@ export default function App() {
 
   useEffect(() => {
     window.sweep.isAdmin().then(setIsAdmin).catch(() => {})
+  }, [])
+
+  useEffect(() => {
+    window.sweep.getAutostart().then(setAutoStart).catch(() => {})
   }, [])
 
   const scan = useCallback(async () => {
@@ -177,6 +182,17 @@ export default function App() {
             )}
             <button title="Check for Updates" onClick={handleCheckUpdate} className="text-xs text-gray-400 hover:text-blue-500">🔄</button>
             <ThemeToggle dark={dark} onToggle={() => setDark(!dark)} />
+            <button
+              title={autoStart ? 'Auto-start on' : 'Auto-start off'}
+              onClick={async () => {
+                const next = !autoStart
+                await window.sweep.setAutostart(next)
+                setAutoStart(next)
+              }}
+              className={`text-xs ${autoStart ? 'text-green-500' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
+            >
+              ⚡
+            </button>
             <button title="Minimize" onClick={() => window.sweep.minimizeWindow()} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-lg leading-none">─</button>
             <button title="Close (Esc)" onClick={() => window.sweep.closeWindow()} className="text-gray-400 hover:text-red-500 text-lg leading-none">✕</button>
           </div>

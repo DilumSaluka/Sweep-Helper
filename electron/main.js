@@ -208,6 +208,28 @@ ipcMain.handle('update:download', async (_event, url) => {
   } catch (e) { return { success: false, error: e.message } }
 })
 
+ipcMain.handle('autostart:get', async () => {
+  try {
+    const res = require('child_process').execSync(
+      'reg query "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run" /v "SweepHelper" 2>nul',
+      { timeout: 3000 }
+    ).toString()
+    return res.includes('SweepHelper')
+  } catch { return false }
+})
+
+ipcMain.handle('autostart:set', async (_event, enable) => {
+  try {
+    const exePath = app.getPath('exe')
+    if (enable) {
+      require('child_process').execSync(`reg add "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run" /v "SweepHelper" /t REG_SZ /d "${exePath}" /f`, { timeout: 3000 })
+    } else {
+      require('child_process').execSync(`reg delete "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run" /v "SweepHelper" /f 2>nul`, { timeout: 3000 })
+    }
+    return { success: true }
+  } catch (e) { return { success: false, error: e.message } }
+})
+
 ipcMain.handle('system:info', async () => {
   const totalMem = os.totalmem()
   const freeMem = os.freemem()
