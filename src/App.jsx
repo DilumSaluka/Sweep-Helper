@@ -16,8 +16,11 @@ const TABS = [
 ]
 
 export default function App() {
-  const [dark, setDark] = useState(true)
-  const [tab, setTab] = useState('clean')
+  const [dark, setDark] = useState(() => {
+    const saved = localStorage.getItem('sweep-dark')
+    return saved !== null ? JSON.parse(saved) : true
+  })
+  const [tab, setTab] = useState(() => localStorage.getItem('sweep-tab') || 'clean')
   const [items, setItems] = useState([])
   const [scanning, setScanning] = useState(true)
   const [cleaning, setCleaning] = useState(false)
@@ -33,6 +36,14 @@ export default function App() {
   useEffect(() => {
     document.documentElement.classList.toggle('dark', dark)
   }, [dark])
+
+  useEffect(() => {
+    localStorage.setItem('sweep-dark', JSON.stringify(dark))
+  }, [dark])
+
+  useEffect(() => {
+    localStorage.setItem('sweep-tab', tab)
+  }, [tab])
 
   useEffect(() => {
     const handler = (e) => {
