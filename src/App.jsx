@@ -181,7 +181,7 @@ export default function App() {
         <div className="drag flex items-center justify-between px-5 py-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-2">
             <span className="text-lg">🧹</span>
-            <span className="font-semibold text-sm tracking-tight">Sweep Helper <span onClick={() => setShowAbout(true)} className="font-normal text-[10px] text-gray-400 cursor-pointer hover:text-blue-500">v1.4</span></span>
+            <span className="font-semibold text-sm tracking-tight">Sweep Helper <span onClick={() => setShowAbout(true)} className="font-normal text-[10px] text-gray-400 cursor-pointer hover:text-blue-500">v1.5</span></span>
           </div>
           <div className="no-drag flex items-center gap-2">
             {canUndo && tab === 'clean' && (
@@ -277,7 +277,7 @@ export default function App() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setShowAbout(false)}>
           <div className="bg-white dark:bg-gray-800 rounded-2xl px-6 py-5 shadow-2xl border border-gray-200 dark:border-gray-700 max-w-xs text-center" onClick={e => e.stopPropagation()}>
             <p className="text-2xl mb-2">🧹</p>
-            <p className="font-bold text-sm">Sweep Helper v1.4</p>
+            <p className="font-bold text-sm">Sweep Helper v1.5</p>
             <p className="text-xs text-gray-400 mt-1">Clean your PC in one click</p>
             <p className="text-xs text-gray-400 mt-3">By <a href="https://github.com/DilumSaluka" className="text-blue-500 hover:underline" target="_blank">Dilum Saluka</a></p>
             <p className="text-xs text-gray-400">MIT License</p>
