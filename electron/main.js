@@ -12,6 +12,7 @@ const startupManager = require('./cleaners/startup-manager')
 const duplicateFinder = require('./cleaners/duplicate-finder')
 
 let mainWindow = null
+let windowStateSaveTimer = null
 
 app.isQuitting = false
 
@@ -28,10 +29,29 @@ if (!gotTheLock) {
   })
 }
 
+function loadWindowState() {
+  try {
+    const statePath = path.join(app.getPath('userData'), 'window-state.json')
+    if (fs.existsSync(statePath)) return JSON.parse(fs.readFileSync(statePath, 'utf-8'))
+  } catch {}
+  return {}
+}
+
+function saveWindowState() {
+  if (!mainWindow) return
+  const [x, y] = mainWindow.getPosition()
+  try {
+    fs.writeFileSync(path.join(app.getPath('userData'), 'window-state.json'), JSON.stringify({ x, y }), 'utf-8')
+  } catch {}
+}
+
 function createWindow() {
+  const saved = loadWindowState()
   mainWindow = new BrowserWindow({
     width: 520,
     height: 680,
+    x: saved.x,
+    y: saved.y,
     resizable: false,
     frame: false,
     backgroundColor: '#111827',
@@ -55,6 +75,11 @@ function createWindow() {
       e.preventDefault()
       mainWindow?.hide()
     }
+  })
+
+  mainWindow.on('move', () => {
+    if (windowStateSaveTimer) clearTimeout(windowStateSaveTimer)
+    windowStateSaveTimer = setTimeout(saveWindowState, 300)
   })
 }
 
