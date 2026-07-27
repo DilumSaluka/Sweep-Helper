@@ -11,6 +11,7 @@ export default function DuplicateFinder() {
   const [scanned, setScanned] = useState(false)
   const [progress, setProgress] = useState('')
   const [sortByNameAsc, setSortByNameAsc] = useState(true)
+  const [ctxMenu, setCtxMenu] = useState(null)
 
   useEffect(() => {
     ;(async () => {
@@ -39,6 +40,12 @@ export default function DuplicateFinder() {
     setScanned(true)
     setProgress('')
   }
+
+  useEffect(() => {
+    const handler = () => setCtxMenu(null)
+    if (ctxMenu) window.addEventListener('click', handler)
+    return () => window.removeEventListener('click', handler)
+  }, [ctxMenu])
 
   const totalDupSize = groups.reduce((sum, g) => sum + g.size * (g.files.length - 1), 0)
 
@@ -255,6 +262,10 @@ export default function DuplicateFinder() {
                     <div
                       key={j}
                       onClick={() => toggleFile(i, file)}
+                      onContextMenu={e => {
+                        e.preventDefault()
+                        setCtxMenu({ x: e.clientX, y: e.clientY, file, groupIdx: i })
+                      }}
                       className={`flex items-center gap-2 px-3 py-1.5 cursor-pointer text-xs ${
                         isChecked ? 'bg-red-50 dark:bg-red-900/10' : 'hover:bg-gray-50 dark:hover:bg-gray-750'
                       }`}
@@ -291,6 +302,31 @@ export default function DuplicateFinder() {
               <p className="text-sm text-gray-400">Pick a drive and scan for duplicate files</p>
             </div>
           )}
+        </div>
+      )}
+      {ctxMenu && (
+        <div
+          className="fixed z-50 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 py-1 text-xs min-w-[140px]"
+          style={{ left: ctxMenu.x, top: ctxMenu.y }}
+        >
+          <button
+            onClick={() => { window.sweep.openLocation(ctxMenu.file); setCtxMenu(null) }}
+            className="w-full text-left px-3 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
+          >
+            Open location
+          </button>
+          <button
+            onClick={() => { navigator.clipboard.writeText(ctxMenu.file); setCtxMenu(null) }}
+            className="w-full text-left px-3 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
+          >
+            Copy path
+          </button>
+          <button
+            onClick={() => { toggleFile(ctxMenu.groupIdx, ctxMenu.file); setCtxMenu(null) }}
+            className="w-full text-left px-3 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600"
+          >
+            Toggle select
+          </button>
         </div>
       )}
     </div>
