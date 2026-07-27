@@ -42,9 +42,9 @@ export default function App() {
 
   useEffect(() => {
     const seen = localStorage.getItem('sweep-whatsnew')
-    if (seen !== 'v1.4.0') {
+    if (seen !== 'v1.5.0') {
       setShowWhatsNew(true)
-      localStorage.setItem('sweep-whatsnew', 'v1.4.0')
+      localStorage.setItem('sweep-whatsnew', 'v1.5.0')
     }
   }, [])
 
@@ -326,19 +326,23 @@ export default function App() {
       {showWhatsNew && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setShowWhatsNew(false)}>
           <div className="bg-white dark:bg-gray-800 rounded-2xl px-6 py-5 shadow-2xl border border-gray-200 dark:border-gray-700 max-w-sm text-left" onClick={e => e.stopPropagation()}>
-            <p className="font-bold text-sm mb-2">🎉 What's New in v1.4</p>
+            <p className="font-bold text-sm mb-2">🎉 What's New in v1.5</p>
             <ul className="text-xs text-gray-400 space-y-1">
-              <li>🔄 Check for Updates button</li>
-              <li>💾 Drive overview with pie charts</li>
-              <li>📂 Right-click context menu on files</li>
-              <li>🔍 Search/filter in Uninstall & Startup</li>
-              <li>📋 Export reports to Desktop</li>
-              <li>⚡ Auto-start with Windows toggle</li>
-              <li>🖥️ PC info & admin detection</li>
-              <li>🔧 System restore point before sweep</li>
-              <li>💾 Minimize to tray</li>
-              <li>🗂️ File type breakdown</li>
-              <li>🎨 Visual polish & performance</li>
+              <li>🔄 Silent auto-update (no install wizard)</li>
+              <li>🛡️ View system restore points dialog</li>
+              <li>📅 Schedule weekly automatic cleanup</li>
+              <li>💾 Disk donut chart in Dashboard</li>
+              <li>⌨️ Ctrl+D/U/F/S keyboard shortcuts</li>
+              <li>👑 Admin badge in title bar</li>
+              <li>📁 File counts in cleaner subcategories</li>
+              <li>💾 Save & restore window position</li>
+              <li>⏹️ Cancel scan button for large files</li>
+              <li>📅 Keep Newest button in Duplicates</li>
+              <li>🖱️ Right-click context menu on duplicates</li>
+              <li>🔄 Shift+click select entire group</li>
+              <li>⊟ Start minimized to tray option</li>
+              <li>🖱️ Explorer right-click context menu</li>
+              <li>🛡️ Manual restore point button</li>
             </ul>
             <button onClick={() => setShowWhatsNew(false)} className="mt-4 w-full px-4 py-1.5 text-xs font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700">Got it!</button>
           </div>
