@@ -163,7 +163,7 @@ function CategoryRow({ cat }) {
           <div className="ml-7 space-y-0.5">
           {cat.subCategories.map(sub => (
             <div key={sub.subId} className="flex justify-between text-xs text-gray-400">
-              <span>{sub.label}</span>
+              <span>{sub.label}{sub.count != null ? ` (${sub.count} files)` : ''}</span>
               <span>{formatSize(sub.size)}</span>
             </div>
           ))}

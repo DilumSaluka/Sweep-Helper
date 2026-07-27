@@ -10,44 +10,46 @@ const BROWSER_CACHE_DIRS = [
   { id: 'cache-firefox', label: 'Firefox', path: path.join(os.homedir(), 'AppData', 'Local', 'Mozilla', 'Firefox', 'Profiles') }
 ]
 
-function getDirSize(dirPath) {
+function getDirInfo(dirPath) {
   try {
-    if (!fs.existsSync(dirPath)) return 0
+    if (!fs.existsSync(dirPath)) return { size: 0, count: 0 }
     const entries = fs.readdirSync(dirPath, { withFileTypes: true })
-    let total = 0
+    let size = 0, count = 0
     for (const entry of entries) {
       try {
         const fullPath = path.join(dirPath, entry.name)
         if (entry.isFile()) {
-          total += fs.statSync(fullPath).size
+          size += fs.statSync(fullPath).size; count++
         } else if (entry.isDirectory()) {
-          total += getDirSizeRecursive(fullPath)
+          const sub = getDirInfoRecursive(fullPath)
+          size += sub.size; count += sub.count
         }
       } catch {}
     }
-    return total
+    return { size, count }
   } catch {
-    return 0
+    return { size: 0, count: 0 }
   }
 }
 
-function getDirSizeRecursive(dirPath) {
+function getDirInfoRecursive(dirPath) {
   try {
     const entries = fs.readdirSync(dirPath, { withFileTypes: true })
-    let total = 0
+    let size = 0, count = 0
     for (const entry of entries) {
       try {
         const fullPath = path.join(dirPath, entry.name)
         if (entry.isFile()) {
-          total += fs.statSync(fullPath).size
+          size += fs.statSync(fullPath).size; count++
         } else if (entry.isDirectory()) {
-          total += getDirSizeRecursive(fullPath)
+          const sub = getDirInfoRecursive(fullPath)
+          size += sub.size; count += sub.count
         }
       } catch {}
     }
-    return total
+    return { size, count }
   } catch {
-    return 0
+    return { size: 0, count: 0 }
   }
 }
 
@@ -56,25 +58,26 @@ exports.scan = async () => {
   let totalBytes = 0
 
   for (const dir of BROWSER_CACHE_DIRS) {
-    if (dir.id === 'cache-firefox') {
+      if (dir.id === 'cache-firefox') {
       try {
         if (fs.existsSync(dir.path)) {
           const profiles = fs.readdirSync(dir.path)
-          let firefoxSize = 0
+          let firefoxSize = 0, firefoxCount = 0
           for (const profile of profiles) {
             const cachePath = path.join(dir.path, profile, 'cache2')
-            const entries = path.join(dir.path, profile, 'thumbnails')
-            firefoxSize += getDirSizeRecursive(cachePath)
-            firefoxSize += getDirSizeRecursive(entries)
+            const thumbPath = path.join(dir.path, profile, 'thumbnails')
+            const c = getDirInfoRecursive(cachePath)
+            const t = getDirInfoRecursive(thumbPath)
+            firefoxSize += c.size + t.size; firefoxCount += c.count + t.count
           }
           totalBytes += firefoxSize
-          results.push({ id: 'browser', subId: dir.id, label: dir.label, size: firefoxSize, path: dir.path })
+          results.push({ id: 'browser', subId: dir.id, label: dir.label, size: firefoxSize, count: firefoxCount, path: dir.path })
         }
       } catch {}
     } else {
-      const size = getDirSizeRecursive(dir.path)
-      totalBytes += size
-      results.push({ id: 'browser', subId: dir.id, label: dir.label, size, path: dir.path })
+      const info = getDirInfo(dir.path)
+      totalBytes += info.size
+      results.push({ id: 'browser', subId: dir.id, label: dir.label, size: info.size, count: info.count, path: dir.path })
     }
   }
 

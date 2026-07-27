@@ -8,22 +8,22 @@ const TEMP_DIRS = [
   { id: 'temp-prefetch', label: 'Prefetch files', path: path.join(process.env.SystemRoot || 'C:\\Windows', 'Prefetch') }
 ]
 
-function getDirSize(dirPath) {
+function getDirInfo(dirPath) {
   try {
-    if (!fs.existsSync(dirPath)) return 0
+    if (!fs.existsSync(dirPath)) return { size: 0, count: 0 }
     const entries = fs.readdirSync(dirPath, { withFileTypes: true })
-    let total = 0
+    let size = 0, count = 0
     for (const entry of entries) {
       try {
         const fullPath = path.join(dirPath, entry.name)
         if (entry.isFile()) {
-          total += fs.statSync(fullPath).size
+          size += fs.statSync(fullPath).size; count++
         }
       } catch {}
     }
-    return total
+    return { size, count }
   } catch {
-    return 0
+    return { size: 0, count: 0 }
   }
 }
 
@@ -31,9 +31,9 @@ exports.scan = async () => {
   const results = []
   let totalBytes = 0
   for (const dir of TEMP_DIRS) {
-    const size = getDirSize(dir.path)
-    totalBytes += size
-    results.push({ id: 'temp', subId: dir.id, label: dir.label, size, path: dir.path })
+    const info = getDirInfo(dir.path)
+    totalBytes += info.size
+    results.push({ id: 'temp', subId: dir.id, label: dir.label, size: info.size, count: info.count, path: dir.path })
   }
   return [{ id: 'temp', label: 'Temporary Files', size: totalBytes, subCategories: results }]
 }
