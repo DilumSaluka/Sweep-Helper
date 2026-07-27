@@ -182,6 +182,14 @@ ipcMain.handle('duplicate:delete', async (_event, paths) => {
   return duplicateFinder.deleteFiles(paths)
 })
 
+ipcMain.handle('system:listRestorePoints', async () => {
+  try {
+    const { execSync } = require('child_process')
+    const output = execSync('powershell.exe "Get-ComputerRestorePoint | Select-Object -Property Description,SequenceNumber,CreationTime,RestorePointType | ConvertTo-Json"', { timeout: 10000 }).toString().trim()
+    return JSON.parse(output)
+  } catch { return [] }
+})
+
 ipcMain.handle('system:restorePoint', async () => {
   try {
     require('child_process').execSync('powershell.exe -Command "Checkpoint-Computer -Description \'Sweep Helper cleanup\' -RestorePointType MODIFY_SETTINGS"', { timeout: 30000 })

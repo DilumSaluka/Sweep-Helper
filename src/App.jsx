@@ -34,6 +34,8 @@ export default function App() {
   const [isAdmin, setIsAdmin] = useState(true)
   const [autoStart, setAutoStart] = useState(false)
   const [showWhatsNew, setShowWhatsNew] = useState(false)
+  const [showRestorePoints, setShowRestorePoints] = useState(false)
+  const [restorePoints, setRestorePoints] = useState([])
 
   useEffect(() => {
     const seen = localStorage.getItem('sweep-whatsnew')
@@ -118,6 +120,14 @@ export default function App() {
     } catch {}
     setCanUndo(false)
     scan()
+  }
+
+  const handleViewRestorePoints = async () => {
+    try {
+      const points = await window.sweep.listRestorePoints()
+      setRestorePoints(Array.isArray(points) ? points : [points])
+    } catch { setRestorePoints([]) }
+    setShowRestorePoints(true)
   }
 
   const handleRestart = () => {
@@ -236,6 +246,7 @@ export default function App() {
                 cleaning={cleaning}
                 onClean={handleClean}
                 lastScan={lastScan}
+                onRestorePoints={handleViewRestorePoints}
               />
             )
           )}
@@ -270,6 +281,29 @@ export default function App() {
               <li>🎨 Visual polish & performance</li>
             </ul>
             <button onClick={() => setShowWhatsNew(false)} className="mt-4 w-full px-4 py-1.5 text-xs font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700">Got it!</button>
+          </div>
+        </div>
+      )}
+      {showRestorePoints && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setShowRestorePoints(false)}>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl px-6 py-5 shadow-2xl border border-gray-200 dark:border-gray-700 max-w-sm w-full mx-4" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-3">
+              <p className="font-bold text-sm">System Restore Points</p>
+              <button onClick={() => setShowRestorePoints(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-lg leading-none">✕</button>
+            </div>
+            {restorePoints.length === 0 ? (
+              <p className="text-xs text-gray-400 text-center py-4">No restore points found.</p>
+            ) : (
+              <div className="space-y-2 max-h-60 overflow-y-auto">
+                {restorePoints.map((rp, i) => (
+                  <div key={rp.SequenceNumber || i} className="bg-gray-50 dark:bg-gray-700/50 rounded-lg px-3 py-2">
+                    <p className="text-xs font-medium">{rp.Description || 'Restore Point'}</p>
+                    <p className="text-[10px] text-gray-400">{rp.CreationTime ? new Date(rp.CreationTime).toLocaleString() : ''}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+            <button onClick={() => setShowRestorePoints(false)} className="mt-4 w-full px-4 py-1.5 text-xs font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700">Close</button>
           </div>
         </div>
       )}

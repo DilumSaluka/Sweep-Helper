@@ -1,6 +1,6 @@
 ﻿import { useState, useEffect } from 'react'
 
-export default function Dashboard({ items, scanning, cleaning, onClean, lastScan }) {
+export default function Dashboard({ items, scanning, cleaning, onClean, lastScan, onRestorePoints }) {
   const [sysInfo, setSysInfo] = useState(null)
   const [drives, setDrives] = useState([])
 
@@ -98,13 +98,19 @@ export default function Dashboard({ items, scanning, cleaning, onClean, lastScan
         </button>
       </div>
 
-      {sysInfo && (
-        <div className="mt-2 flex items-center justify-center gap-3 text-[10px] text-gray-400">
-          <span>{sysInfo.platform === 'win32' ? 'Windows' : sysInfo.platform} {sysInfo.release}</span>
-          <span>·</span>
-          <span>{formatSize(sysInfo.totalMem)} RAM</span>
-        </div>
-      )}
+      <div className="mt-2 flex items-center justify-center gap-3 text-[10px] text-gray-400">
+        {sysInfo && (
+          <>
+            <span>{sysInfo.platform === 'win32' ? 'Windows' : sysInfo.platform} {sysInfo.release}</span>
+            <span>·</span>
+            <span>{formatSize(sysInfo.totalMem)} RAM</span>
+            <span>·</span>
+          </>
+        )}
+        {onRestorePoints && (
+          <button onClick={onRestorePoints} className="hover:text-blue-500" title="View system restore points">🛡️</button>
+        )}
+      </div>
     </div>
   )
 }

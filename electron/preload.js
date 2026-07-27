@@ -2,6 +2,7 @@
 
 contextBridge.exposeInMainWorld('sweep', {
   createRestorePoint: () => ipcRenderer.invoke('system:restorePoint'),
+  listRestorePoints: () => ipcRenderer.invoke('system:listRestorePoints'),
   closeWindow: () => ipcRenderer.invoke('window:close'),
   minimizeWindow: () => ipcRenderer.invoke('window:minimize'),
   showWindow: () => ipcRenderer.invoke('window:show'),
