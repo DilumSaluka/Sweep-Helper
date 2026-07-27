@@ -98,6 +98,10 @@ export default function App() {
     const handler = (e) => {
       if (e.key === 'Escape' || (e.ctrlKey && e.key === 'w')) window.sweep.closeWindow()
       if (e.ctrlKey && e.key === 'r') { e.preventDefault(); if (tab === 'clean') scan() }
+      if (e.ctrlKey && e.key === 'd') { e.preventDefault(); setTab('duplicates') }
+      if (e.ctrlKey && e.key === 'u') { e.preventDefault(); setTab('uninstall') }
+      if (e.ctrlKey && e.key === 'f') { e.preventDefault(); setTab('files') }
+      if (e.ctrlKey && e.key === 's') { e.preventDefault(); setTab('startup') }
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
@@ -239,6 +243,7 @@ export default function App() {
             <button
               key={t.id}
               onClick={() => setTab(t.id)}
+              title={t.id === 'clean' ? 'Ctrl+R to rescan' : t.id === 'uninstall' ? 'Ctrl+U' : t.id === 'files' ? 'Ctrl+F' : t.id === 'startup' ? 'Ctrl+S' : 'Ctrl+D'}
               className={`flex-1 py-2 text-xs font-medium transition-colors whitespace-nowrap ${
                 tab === t.id
                   ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
