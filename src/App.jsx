@@ -36,6 +36,7 @@ export default function App() {
   const [showWhatsNew, setShowWhatsNew] = useState(false)
   const [showRestorePoints, setShowRestorePoints] = useState(false)
   const [restorePoints, setRestorePoints] = useState([])
+  const [scheduleActive, setScheduleActive] = useState(false)
 
   useEffect(() => {
     const seen = localStorage.getItem('sweep-whatsnew')
@@ -72,6 +73,10 @@ export default function App() {
 
   useEffect(() => {
     window.sweep.getAutostart().then(setAutoStart).catch(() => {})
+  }, [])
+
+  useEffect(() => {
+    window.sweep.scheduleStatus().then(r => setScheduleActive(r.success)).catch(() => {})
   }, [])
 
   const scan = useCallback(async () => {
@@ -120,6 +125,16 @@ export default function App() {
     } catch {}
     setCanUndo(false)
     scan()
+  }
+
+  const handleScheduleToggle = async () => {
+    if (scheduleActive) {
+      await window.sweep.scheduleRemove()
+      setScheduleActive(false)
+    } else {
+      const r = await window.sweep.scheduleWeekly()
+      setScheduleActive(r.success)
+    }
   }
 
   const handleViewRestorePoints = async () => {
@@ -259,6 +274,10 @@ export default function App() {
           <span>© 2026 Dilum Saluka</span>
           <span>·</span>
           <a href="https://github.com/DilumSaluka/Sweep-Helper/issues" target="_blank" className="hover:text-blue-500">Feedback</a>
+          <span>·</span>
+          <button onClick={handleScheduleToggle} className={`hover:text-blue-500 ${scheduleActive ? 'text-green-500' : ''}`}>
+            {scheduleActive ? 'Weekly ✓' : 'Schedule'}
+          </button>
           {!isAdmin && <span className="text-amber-500">⚠️ Limited mode</span>}
         </div>
       </div>

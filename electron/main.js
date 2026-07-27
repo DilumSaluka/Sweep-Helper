@@ -197,6 +197,28 @@ ipcMain.handle('system:restorePoint', async () => {
   } catch (e) { return { success: false, error: e.message } }
 })
 
+ipcMain.handle('schedule:weekly', async () => {
+  try {
+    const exePath = app.getPath('exe')
+    require('child_process').execSync(`schtasks /create /tn "SweepHelperWeekly" /tr "${exePath}" /sc weekly /f`, { timeout: 5000 })
+    return { success: true }
+  } catch (e) { return { success: false, error: e.message } }
+})
+
+ipcMain.handle('schedule:status', async () => {
+  try {
+    require('child_process').execSync('schtasks /query /tn "SweepHelperWeekly" /nh', { timeout: 3000 })
+    return { success: true }
+  } catch { return { success: false } }
+})
+
+ipcMain.handle('schedule:remove', async () => {
+  try {
+    require('child_process').execSync('schtasks /delete /tn "SweepHelperWeekly" /f', { timeout: 5000 })
+    return { success: true }
+  } catch (e) { return { success: false, error: e.message } }
+})
+
 const GITHUB_REPO = 'DilumSaluka/Sweep-Helper'
 const UPDATE_URL = `https://api.github.com/repos/${GITHUB_REPO}/releases/latest`
 
