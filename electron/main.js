@@ -370,6 +370,39 @@ ipcMain.handle('shell:openRestore', async () => {
   } catch (e) { console.error('Failed to open restore folder:', e.message) }
 })
 
+ipcMain.handle('explorer:installMenu', async () => {
+  try {
+    const exePath = app.getPath('exe')
+    const { execSync } = require('child_process')
+    execSync(`reg add "HKCR\\*\\shell\\Sweep with Sweep Helper\\command" /ve /d "${exePath}" "--sweep-file" "%1" /f`, { timeout: 3000 })
+    execSync(`reg add "HKCR\\Directory\\shell\\Sweep with Sweep Helper\\command" /ve /d "${exePath}" "--sweep-folder" "%1" /f`, { timeout: 3000 })
+    execSync(`reg add "HKCR\\*\\shell\\Sweep with Sweep Helper" /v "Icon" /d "${exePath}" /f`, { timeout: 3000 })
+    return { success: true }
+  } catch (e) { return { success: false, error: e.message } }
+})
+
+ipcMain.handle('explorer:removeMenu', async () => {
+  try {
+    require('child_process').execSync('reg delete "HKCR\\*\\shell\\Sweep with Sweep Helper" /f', { timeout: 3000 })
+    require('child_process').execSync('reg delete "HKCR\\Directory\\shell\\Sweep with Sweep Helper" /f', { timeout: 3000 })
+    return { success: true }
+  } catch (e) { return { success: false, error: e.message } }
+})
+
+ipcMain.handle('explorer:checkMenu', async () => {
+  try {
+    require('child_process').execSync('reg query "HKCR\\*\\shell\\Sweep with Sweep Helper"', { timeout: 3000 })
+    return true
+  } catch { return false }
+})
+
+ipcMain.handle('file:sweepItem', async (_event, filePath) => {
+  try {
+    await safeBin.addFile(filePath)
+    return { success: true }
+  } catch (e) { return { success: false, error: e.message } }
+})
+
 ipcMain.handle('shell:openLocation', async (_event, filePath) => {
   try {
     shell.showItemInFolder(filePath)

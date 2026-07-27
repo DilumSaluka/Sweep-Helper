@@ -38,6 +38,7 @@ export default function App() {
   const [restorePoints, setRestorePoints] = useState([])
   const [scheduleActive, setScheduleActive] = useState(false)
   const [minimizedOnStart, setMinimizedOnStart] = useState(false)
+  const [explorerMenu, setExplorerMenu] = useState(false)
 
   useEffect(() => {
     const seen = localStorage.getItem('sweep-whatsnew')
@@ -82,6 +83,10 @@ export default function App() {
 
   useEffect(() => {
     window.sweep.getStartMinimized().then(setMinimizedOnStart).catch(() => {})
+  }, [])
+
+  useEffect(() => {
+    window.sweep.checkExplorerMenu().then(setExplorerMenu).catch(() => {})
   }, [])
 
   const scan = useCallback(async () => {
@@ -224,6 +229,21 @@ export default function App() {
               </button>
             )}
             <button title="Check for Updates" onClick={handleCheckUpdate} className="text-xs text-gray-400 hover:text-blue-500">🔄</button>
+            <button
+              title={explorerMenu ? 'Explorer context menu on' : 'Explorer context menu off'}
+              onClick={async () => {
+                if (explorerMenu) {
+                  await window.sweep.removeExplorerMenu()
+                  setExplorerMenu(false)
+                } else {
+                  const r = await window.sweep.installExplorerMenu()
+                  if (r.success) setExplorerMenu(true)
+                }
+              }}
+              className={`text-xs ${explorerMenu ? 'text-green-500' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
+            >
+              🖱️
+            </button>
             <ThemeToggle dark={dark} onToggle={() => setDark(!dark)} />
             <button
               title={autoStart ? 'Auto-start on' : 'Auto-start off'}

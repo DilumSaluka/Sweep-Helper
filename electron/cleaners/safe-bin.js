@@ -67,6 +67,12 @@ exports.hasRestorableItems = () => {
   return meta.sessions.length > 0 && meta.sessions[0].items.some(i => !i.restored)
 }
 
+exports.addFile = (sourcePath) => {
+  const result = exports.moveToSafeBin(sourcePath)
+  if (result) return { success: true }
+  throw new Error('Failed to move file to safe bin')
+}
+
 exports.purgeOldItems = () => {
   const meta = loadMetadata()
   const cutoff = Date.now() - 7 * 86400000
