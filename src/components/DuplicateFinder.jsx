@@ -241,7 +241,19 @@ export default function DuplicateFinder() {
           {groups.map((group, i) => (
             <div key={i} className="bg-white dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
               <div
-                onClick={() => toggleGroup(i)}
+                onClick={(e) => {
+                  if (e.shiftKey) {
+                    const allInGroup = new Map(checked)
+                    group.files.forEach(f => {
+                      const k = i + '::' + f
+                      if (allInGroup.has(k)) allInGroup.delete(k)
+                      else allInGroup.set(k, f)
+                    })
+                    setChecked(allInGroup)
+                  } else {
+                    toggleGroup(i)
+                  }
+                }}
                 className="flex items-center justify-between px-3 py-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-750"
               >
                 <div className="flex items-center gap-2 min-w-0">
