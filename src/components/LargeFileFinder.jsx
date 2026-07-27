@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 export default function LargeFileFinder() {
   const [drives, setDrives] = useState([])
