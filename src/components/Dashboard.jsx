@@ -3,6 +3,7 @@
 export default function Dashboard({ items, scanning, cleaning, onClean, lastScan, onRestorePoints }) {
   const [sysInfo, setSysInfo] = useState(null)
   const [drives, setDrives] = useState([])
+  const [rpStatus, setRpStatus] = useState('')
   const canvasRef = useRef(null)
 
   useEffect(() => {
@@ -141,6 +142,17 @@ export default function Dashboard({ items, scanning, cleaning, onClean, lastScan
         {onRestorePoints && (
           <button onClick={onRestorePoints} className="hover:text-blue-500" title="View system restore points">🛡️</button>
         )}
+        <button onClick={async () => {
+          if (rpStatus === 'creating') return
+          setRpStatus('creating')
+          try {
+            await window.sweep.createRestorePoint()
+            setRpStatus('done')
+            setTimeout(() => setRpStatus(''), 2000)
+          } catch { setRpStatus('') }
+        }} className="hover:text-blue-500" title="Create system restore point before sweeping">
+          {rpStatus === 'creating' ? 'Creating...' : rpStatus === 'done' ? 'Done' : 'Create RP'}
+        </button>
       </div>
     </div>
   )
