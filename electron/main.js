@@ -295,7 +295,7 @@ ipcMain.handle('shell:openLocation', async (_event, filePath) => {
 
 ipcMain.handle('update:install', async (_event, installerPath) => {
   try {
-    await shell.openPath(installerPath)
-  } catch (e) { console.error('Failed to open installer:', e.message) }
+    require('child_process').execFile(installerPath, ['/S'])
+  } catch (e) { console.error('Failed to run installer:', e.message) }
   app.quit()
 })
