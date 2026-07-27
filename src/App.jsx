@@ -37,6 +37,7 @@ export default function App() {
   const [showRestorePoints, setShowRestorePoints] = useState(false)
   const [restorePoints, setRestorePoints] = useState([])
   const [scheduleActive, setScheduleActive] = useState(false)
+  const [minimizedOnStart, setMinimizedOnStart] = useState(false)
 
   useEffect(() => {
     const seen = localStorage.getItem('sweep-whatsnew')
@@ -77,6 +78,10 @@ export default function App() {
 
   useEffect(() => {
     window.sweep.scheduleStatus().then(r => setScheduleActive(r.success)).catch(() => {})
+  }, [])
+
+  useEffect(() => {
+    window.sweep.getStartMinimized().then(setMinimizedOnStart).catch(() => {})
   }, [])
 
   const scan = useCallback(async () => {
@@ -230,6 +235,17 @@ export default function App() {
               className={`text-xs ${autoStart ? 'text-green-500' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
             >
               ⚡
+            </button>
+            <button
+              title={minimizedOnStart ? 'Start minimized on' : 'Start minimized off'}
+              onClick={async () => {
+                const next = !minimizedOnStart
+                await window.sweep.setStartMinimized(next)
+                setMinimizedOnStart(next)
+              }}
+              className={`text-xs ${minimizedOnStart ? 'text-green-500' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
+            >
+              ⊟
             </button>
             <button title="Minimize" onClick={() => window.sweep.minimizeWindow()} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-lg leading-none">─</button>
             <button title="Close (Esc)" onClick={() => window.sweep.closeWindow()} className="text-gray-400 hover:text-red-500 text-lg leading-none">✕</button>

@@ -70,6 +70,10 @@ function createWindow() {
     mainWindow.loadFile(path.join(__dirname, '..', 'dist', 'index.html'))
   }
 
+  if (readSettings().startMinimized) {
+    mainWindow?.hide()
+  }
+
   mainWindow.on('close', (e) => {
     if (!app.isQuitting) {
       e.preventDefault()
@@ -141,6 +145,30 @@ ipcMain.handle('clean:items', async (_event, items) => {
       case 'browser': await browserCache.clean(item.subCategories); break
     }
   }
+  return { success: true }
+})
+
+const SETTINGS_PATH = path.join(app.getPath('userData'), 'settings.json')
+
+function readSettings() {
+  try {
+    if (fs.existsSync(SETTINGS_PATH)) return JSON.parse(fs.readFileSync(SETTINGS_PATH, 'utf-8'))
+  } catch {}
+  return {}
+}
+
+function writeSettings(data) {
+  try { fs.writeFileSync(SETTINGS_PATH, JSON.stringify(data), 'utf-8') } catch {}
+}
+
+ipcMain.handle('startMinimized:get', async () => {
+  return !!readSettings().startMinimized
+})
+
+ipcMain.handle('startMinimized:set', async (_event, val) => {
+  const s = readSettings()
+  s.startMinimized = !!val
+  writeSettings(s)
   return { success: true }
 })
 

@@ -1,6 +1,8 @@
 ﻿const { contextBridge, ipcRenderer } = require('electron')
 
 contextBridge.exposeInMainWorld('sweep', {
+  getStartMinimized: () => ipcRenderer.invoke('startMinimized:get'),
+  setStartMinimized: (val) => ipcRenderer.invoke('startMinimized:set', val),
   createRestorePoint: () => ipcRenderer.invoke('system:restorePoint'),
   listRestorePoints: () => ipcRenderer.invoke('system:listRestorePoints'),
   closeWindow: () => ipcRenderer.invoke('window:close'),
