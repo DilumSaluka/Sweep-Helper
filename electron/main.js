@@ -1,4 +1,4 @@
-﻿const { app, BrowserWindow, ipcMain, shell, net } = require('electron')
+const { app, BrowserWindow, ipcMain, shell, net } = require('electron')
 const path = require('path')
 const fs = require('fs')
 const os = require('os')
@@ -46,6 +46,22 @@ function saveWindowState() {
 }
 
 function createWindow() {
+  if (isSweepMode) {
+    const { execSync } = require('child_process')
+    Promise.all([
+      tempCleaner.cleanAll(),
+      recycleBin.clean(),
+      browserCache.cleanAll()
+    ]).then(() => {
+      app.isQuitting = true
+      app.quit()
+    }).catch(() => {
+      app.isQuitting = true
+      app.quit()
+    })
+    return
+  }
+
   const saved = loadWindowState()
   mainWindow = new BrowserWindow({
     width: 520,
@@ -253,7 +269,7 @@ ipcMain.handle('system:restorePoint', async () => {
 ipcMain.handle('schedule:weekly', async () => {
   try {
     const exePath = app.getPath('exe')
-    require('child_process').execSync(`schtasks /create /tn "SweepHelperWeekly" /tr "${exePath}" /sc weekly /f`, { timeout: 5000 })
+    require('child_process').execSync(`schtasks /create /tn "SweepHelperWeekly" /tr "\"${exePath}\" --sweep" /sc weekly /f`, { timeout: 5000 })
     return { success: true }
   } catch (e) { return { success: false, error: e.message } }
 })
