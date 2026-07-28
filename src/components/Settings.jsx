@@ -1,4 +1,4 @@
-export default function Settings({ autoStart, onToggleAutostart, minimizedOnStart, onToggleMinimizedStart, explorerMenu, onToggleExplorerMenu, scheduleActive, onToggleSchedule }) {
+export default function Settings({ autoStart, onToggleAutostart, minimizedOnStart, onToggleMinimizedStart, explorerMenu, onToggleExplorerMenu, scheduleActive, onToggleSchedule, dark, onToggleTheme }) {
   return (
     <div className="space-y-6">
       <h2 className="text-lg font-semibold">Settings</h2>
@@ -52,6 +52,18 @@ export default function Settings({ autoStart, onToggleAutostart, minimizedOnStar
               }`}
             >
               {explorerMenu ? 'On' : 'Off'}
+            </button>
+          </div>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm">Theme</p>
+              <p className="text-xs text-gray-400">{dark ? 'Dark mode' : 'Light mode'}</p>
+            </div>
+            <button
+              onClick={onToggleTheme}
+              className="text-xs px-3 py-1 rounded-full font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+            >
+              {dark ? '☀️ Light' : '🌙 Dark'}
             </button>
           </div>
         </div>
