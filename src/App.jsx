@@ -1,7 +1,6 @@
 ﻿import { useState, useEffect, useCallback } from 'react'
 import Dashboard from './components/Dashboard'
 import Results from './components/Results'
-import ThemeToggle from './components/ThemeToggle'
 import UninstallManager from './components/UninstallManager'
 import LargeFileFinder from './components/LargeFileFinder'
 import StartupManager from './components/StartupManager'
@@ -41,6 +40,7 @@ export default function App() {
   const [scheduleActive, setScheduleActive] = useState(false)
   const [minimizedOnStart, setMinimizedOnStart] = useState(false)
   const [explorerMenu, setExplorerMenu] = useState(false)
+const [sysInfo, setSysInfo] = useState(null)
 
   useEffect(() => {
     const seen = localStorage.getItem('sweep-whatsnew')
@@ -89,6 +89,10 @@ export default function App() {
 
   useEffect(() => {
     window.sweep.checkExplorerMenu().then(setExplorerMenu).catch(() => {})
+  }, [])
+
+  useEffect(() => {
+    window.sweep.getSystemInfo().then(setSysInfo).catch(() => {})
   }, [])
 
   const scan = useCallback(async () => {
@@ -260,22 +264,6 @@ export default function App() {
               </>
             )}
             <button title="Check for Updates" onClick={handleCheckUpdate} className="text-xs text-gray-400 hover:text-blue-500">🔄</button>
-            <button
-              title={explorerMenu ? 'Explorer context menu on' : 'Explorer context menu off'}
-              onClick={async () => {
-                if (explorerMenu) {
-                  await window.sweep.removeExplorerMenu()
-                  setExplorerMenu(false)
-                } else {
-                  const r = await window.sweep.installExplorerMenu()
-                  if (r.success) setExplorerMenu(true)
-                }
-              }}
-              className={`text-xs ${explorerMenu ? 'text-green-500' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
-            >
-              🖱️
-            </button>
-            <ThemeToggle dark={dark} onToggle={() => setDark(!dark)} />
             <button title="Minimize" onClick={() => window.sweep.minimizeWindow()} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-lg leading-none">─</button>
             <button title="Close (Esc)" onClick={() => window.sweep.closeWindow()} className="text-gray-400 hover:text-red-500 text-lg leading-none">✕</button>
           </div>
@@ -319,7 +307,7 @@ export default function App() {
           {tab === 'files' && <LargeFileFinder />}
           {tab === 'startup' && <StartupManager />}
           {tab === 'duplicates' && <DuplicateFinder />}
-          {tab === 'settings' && <Settings autoStart={autoStart} onToggleAutostart={handleToggleAutostart} minimizedOnStart={minimizedOnStart} onToggleMinimizedStart={handleToggleMinimizedStart} />}
+          {tab === 'settings' && <Settings autoStart={autoStart} onToggleAutostart={handleToggleAutostart} minimizedOnStart={minimizedOnStart} onToggleMinimizedStart={handleToggleMinimizedStart} explorerMenu={explorerMenu} onToggleExplorerMenu={async () => { if (explorerMenu) { await window.sweep.removeExplorerMenu(); setExplorerMenu(false) } else { const r = await window.sweep.installExplorerMenu(); if (r.success) setExplorerMenu(true) } }} scheduleActive={scheduleActive} onToggleSchedule={handleScheduleToggle} dark={dark} onToggleTheme={() => setDark(!dark)} sysInfo={sysInfo} isAdmin={isAdmin} />}
         </div>
         <div className="no-drag flex items-center justify-center gap-2 text-[10px] text-gray-400 pb-2">
           <span>© 2026 Dilum Saluka</span>
