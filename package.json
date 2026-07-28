@@ -35,13 +35,18 @@
             "x64"
           ]
         }
-      ]
+      ],
+      "verifyUpdateCodeSignature": false,
+      "signAndEditExecutable": false,
+      "signDlls": false
     },
     "icon": "assets/icon.png",
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "createDesktopShortcut": true
+      "createDesktopShortcut": true,
+      "installerIcon": "assets/icon.ico",
+      "uninstallerIcon": "assets/icon.ico"
     }
   },
   "devDependencies": {
