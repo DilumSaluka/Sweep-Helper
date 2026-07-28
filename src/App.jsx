@@ -6,13 +6,15 @@ import UninstallManager from './components/UninstallManager'
 import LargeFileFinder from './components/LargeFileFinder'
 import StartupManager from './components/StartupManager'
 import DuplicateFinder from './components/DuplicateFinder'
+import Settings from './components/Settings'
 
 const TABS = [
   { id: 'clean', label: 'Cleaner', icon: '🧹' },
   { id: 'uninstall', label: 'Uninstall', icon: '🗑️' },
   { id: 'files', label: 'Files', icon: '📂' },
   { id: 'startup', label: 'Startup', icon: '⚡' },
-  { id: 'duplicates', label: 'Duplicates', icon: '📋' }
+  { id: 'duplicates', label: 'Duplicates', icon: '📋' },
+  { id: 'settings', label: 'Settings', icon: '⚙️' }
 ]
 
 export default function App() {
@@ -112,10 +114,33 @@ export default function App() {
       if (e.ctrlKey && e.key === 'u') { e.preventDefault(); setTab('uninstall') }
       if (e.ctrlKey && e.key === 'f') { e.preventDefault(); setTab('files') }
       if (e.ctrlKey && e.key === 's') { e.preventDefault(); setTab('startup') }
+      if (e.ctrlKey && e.key === 'g') { e.preventDefault(); setTab('settings') }
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
   }, [tab, scan])
+
+  const handleToggleAutostart = async () => {
+    const next = !autoStart
+    await window.sweep.setAutostart(next)
+    setAutoStart(next)
+  }
+
+  const handleToggleMinimizedStart = async () => {
+    const next = !minimizedOnStart
+    await window.sweep.setStartMinimized(next)
+    setMinimizedOnStart(next)
+  }
+
+  const handleToggleExplorerMenu = async () => {
+    if (explorerMenu) {
+      await window.sweep.removeExplorerMenu()
+      setExplorerMenu(false)
+    } else {
+      const r = await window.sweep.installExplorerMenu()
+      if (r.success) setExplorerMenu(true)
+    }
+  }
 
   const handleClean = useCallback(async () => {
     const total = items.reduce((sum, i) => sum + i.size, 0)
@@ -219,54 +244,16 @@ export default function App() {
       <div className="flex-1 flex flex-col bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-2xl overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-700">
         <div className="drag flex items-center justify-between px-5 py-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-2">
-            <span className="text-lg">🧹</span>
+            <span className="text-xl">🧹</span>
             <span className="font-semibold text-sm tracking-tight">Sweep Helper <span onClick={() => setShowAbout(true)} className="font-normal text-[10px] text-gray-400 cursor-pointer hover:text-blue-500">v1.5</span>{isAdmin && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 ml-1">👑 Admin</span>}</span>
           </div>
           <div className="no-drag flex items-center gap-2">
             {canUndo && tab === 'clean' && (
               <button onClick={handleUndo} className="text-xs px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 hover:bg-amber-200 dark:hover:bg-amber-800/60 transition-colors">
-                ↩ Undo
+                <span className="text-base">↩</span> Undo
               </button>
             )}
-            <button title="Check for Updates" onClick={handleCheckUpdate} className="text-xs text-gray-400 hover:text-blue-500">🔄</button>
-            <button
-              title={explorerMenu ? 'Explorer context menu on' : 'Explorer context menu off'}
-              onClick={async () => {
-                if (explorerMenu) {
-                  await window.sweep.removeExplorerMenu()
-                  setExplorerMenu(false)
-                } else {
-                  const r = await window.sweep.installExplorerMenu()
-                  if (r.success) setExplorerMenu(true)
-                }
-              }}
-              className={`text-xs ${explorerMenu ? 'text-green-500' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
-            >
-              🖱️
-            </button>
-            <ThemeToggle dark={dark} onToggle={() => setDark(!dark)} />
-            <button
-              title={autoStart ? 'Auto-start on' : 'Auto-start off'}
-              onClick={async () => {
-                const next = !autoStart
-                await window.sweep.setAutostart(next)
-                setAutoStart(next)
-              }}
-              className={`text-xs ${autoStart ? 'text-green-500' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
-            >
-              ⚡
-            </button>
-            <button
-              title={minimizedOnStart ? 'Start minimized on' : 'Start minimized off'}
-              onClick={async () => {
-                const next = !minimizedOnStart
-                await window.sweep.setStartMinimized(next)
-                setMinimizedOnStart(next)
-              }}
-              className={`text-xs ${minimizedOnStart ? 'text-green-500' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
-            >
-              ⊟
-            </button>
+            <button title="Check for Updates" onClick={handleCheckUpdate} className="text-xs text-gray-400 hover:text-blue-500"><span className="text-base">🔄</span></button>
             <button title="Minimize" onClick={() => window.sweep.minimizeWindow()} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-lg leading-none">─</button>
             <button title="Close (Esc)" onClick={() => window.sweep.closeWindow()} className="text-gray-400 hover:text-red-500 text-lg leading-none">✕</button>
           </div>
@@ -279,14 +266,14 @@ export default function App() {
             <button
               key={t.id}
               onClick={() => setTab(t.id)}
-              title={t.id === 'clean' ? 'Ctrl+R to rescan' : t.id === 'uninstall' ? 'Ctrl+U' : t.id === 'files' ? 'Ctrl+F' : t.id === 'startup' ? 'Ctrl+S' : 'Ctrl+D'}
+              title={t.id === 'clean' ? 'Ctrl+R to rescan' : t.id === 'uninstall' ? 'Ctrl+U' : t.id === 'files' ? 'Ctrl+F' : t.id === 'startup' ? 'Ctrl+S' : t.id === 'settings' ? 'Ctrl+G' : 'Ctrl+D'}
               className={`flex-1 py-2 text-xs font-medium transition-colors whitespace-nowrap ${
                 tab === t.id
                   ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
                   : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
               }`}
             >
-              {t.icon} {t.label}
+              <span className="text-base">{t.icon}</span> {t.label}
             </button>
           ))}
         </div>
@@ -310,15 +297,13 @@ export default function App() {
           {tab === 'files' && <LargeFileFinder />}
           {tab === 'startup' && <StartupManager />}
           {tab === 'duplicates' && <DuplicateFinder />}
+          {tab === 'settings' && <Settings autoStart={autoStart} onToggleAutostart={handleToggleAutostart} minimizedOnStart={minimizedOnStart} onToggleMinimizedStart={handleToggleMinimizedStart} explorerMenu={explorerMenu} onToggleExplorerMenu={handleToggleExplorerMenu} scheduleActive={scheduleActive} onToggleSchedule={handleScheduleToggle} dark={dark} onToggleTheme={() => setDark(!dark)} />}
         </div>
         <div className="no-drag flex items-center justify-center gap-2 text-[10px] text-gray-400 pb-2">
           <span>© 2026 Dilum Saluka</span>
           <span>·</span>
           <a href="https://github.com/DilumSaluka/Sweep-Helper/issues" target="_blank" className="hover:text-blue-500">Feedback</a>
           <span>·</span>
-          <button onClick={handleScheduleToggle} className={`hover:text-blue-500 ${scheduleActive ? 'text-green-500' : ''}`}>
-            {scheduleActive ? 'Weekly ✓' : 'Schedule'}
-          </button>
           {!isAdmin && <span className="text-amber-500">⚠️ Limited mode</span>}
         </div>
       </div>
