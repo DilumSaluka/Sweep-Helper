@@ -88,7 +88,7 @@ export default function Dashboard({ items, scanning, cleaning, onClean, lastScan
           <div className="flex items-center justify-center gap-4 mb-2">
             <canvas ref={canvasRef} width={90} height={90} className="shrink-0" />
             <div>
-              <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Drives</p>
+              <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Drives</p>
               {drives.map(d => {
                 const pct = d.total > 0 ? ((d.total - d.free) / d.total * 100).toFixed(0) : 0
                 return (
@@ -97,13 +97,13 @@ export default function Dashboard({ items, scanning, cleaning, onClean, lastScan
                     <div className="w-20 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                       <div className="h-full bg-blue-500 dark:bg-blue-400 rounded-full" style={{ width: `${pct}%` }} />
                     </div>
-                    <span className="text-[10px] text-gray-400 w-20 text-right shrink-0">{formatSize(d.free)} free</span>
+                    <span className="text-xs text-gray-400 w-20 text-right shrink-0">{formatSize(d.free)} free</span>
                   </div>
                 )
               })}
             </div>
           </div>
-          <p className="text-[10px] text-gray-400 text-center">{drives.length} drive(s) detected</p>
+          <p className="text-xs text-gray-400 text-center">{drives.length} drive(s) detected</p>
         </div>
       )}
 
@@ -164,14 +164,14 @@ function CategoryRow({ cat }) {
     <div className="bg-white dark:bg-gray-800 rounded-xl px-4 py-3 border border-gray-100 dark:border-gray-700">
       <div className="flex items-center justify-between mb-1">
         <div className="flex items-center gap-2">
-          <span>{icon}</span>
+          <span className="text-base">{icon}</span>
           <span className="text-sm font-medium">{cat.label}</span>
         </div>
         <span className="text-sm font-semibold text-blue-600 dark:text-blue-400">{formatSize(cat.size)}</span>
       </div>
       {cat.subCategories && cat.subCategories.length > 0 && (
         <>
-          <p className="text-[10px] text-gray-400 ml-7">{cat.subCategories.length} items</p>
+          <p className="text-xs text-gray-400 ml-7">{cat.subCategories.length} items</p>
           <div className="ml-7 space-y-0.5">
           {cat.subCategories.map(sub => (
             <div key={sub.subId} className="flex justify-between text-xs text-gray-400">
