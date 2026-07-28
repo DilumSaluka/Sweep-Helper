@@ -36,8 +36,6 @@
           ]
         }
       ],
-      "signAndEditExecutable": false,
-      "signDlls": false
     },
     "icon": "assets/icon.png",
     "nsis": {
