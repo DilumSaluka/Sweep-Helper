@@ -164,7 +164,7 @@ function CategoryRow({ cat }) {
     <div className="bg-white dark:bg-gray-800 rounded-xl px-4 py-3 border border-gray-100 dark:border-gray-700">
       <div className="flex items-center justify-between mb-1">
         <div className="flex items-center gap-2">
-          <span>{icon}</span>
+          <span className="text-base">{icon}</span>
           <span className="text-sm font-medium">{cat.label}</span>
         </div>
         <span className="text-sm font-semibold text-blue-600 dark:text-blue-400">{formatSize(cat.size)}</span>
