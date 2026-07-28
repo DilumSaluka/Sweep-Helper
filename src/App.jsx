@@ -120,6 +120,12 @@ export default function App() {
     return () => window.removeEventListener('keydown', handler)
   }, [tab, scan])
 
+  const handleToggleAutostart = async () => {
+    const next = !autoStart
+    await window.sweep.setAutostart(next)
+    setAutoStart(next)
+  }
+
   const handleClean = useCallback(async () => {
     const total = items.reduce((sum, i) => sum + i.size, 0)
     const sizeLabel = total > 1073741824 ? (total / 1073741824).toFixed(1) + ' GB' : (total / 1048576).toFixed(1) + ' MB'
@@ -222,7 +228,7 @@ export default function App() {
       <div className="flex-1 flex flex-col bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-2xl overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-700">
         <div className="drag flex items-center justify-between px-5 py-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-2">
-            <span className="text-lg">🧹</span>
+            <span className="text-xl">🧹</span>
             <span className="font-semibold text-sm tracking-tight">Sweep Helper <span onClick={() => setShowAbout(true)} className="font-normal text-[10px] text-gray-400 cursor-pointer hover:text-blue-500">v1.5</span>{isAdmin && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 ml-1">👑 Admin</span>}</span>
           </div>
           <div className="no-drag flex items-center gap-2">
@@ -248,17 +254,6 @@ export default function App() {
               🖱️
             </button>
             <ThemeToggle dark={dark} onToggle={() => setDark(!dark)} />
-            <button
-              title={autoStart ? 'Auto-start on' : 'Auto-start off'}
-              onClick={async () => {
-                const next = !autoStart
-                await window.sweep.setAutostart(next)
-                setAutoStart(next)
-              }}
-              className={`text-xs ${autoStart ? 'text-green-500' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
-            >
-              ⚡
-            </button>
             <button
               title={minimizedOnStart ? 'Start minimized on' : 'Start minimized off'}
               onClick={async () => {
@@ -313,7 +308,7 @@ export default function App() {
           {tab === 'files' && <LargeFileFinder />}
           {tab === 'startup' && <StartupManager />}
           {tab === 'duplicates' && <DuplicateFinder />}
-          {tab === 'settings' && <Settings />}
+          {tab === 'settings' && <Settings autoStart={autoStart} onToggleAutostart={handleToggleAutostart} />}
         </div>
         <div className="no-drag flex items-center justify-center gap-2 text-[10px] text-gray-400 pb-2">
           <span>© 2026 Dilum Saluka</span>
