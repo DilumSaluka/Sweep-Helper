@@ -1,4 +1,4 @@
-export default function Settings({ autoStart, onToggleAutostart, minimizedOnStart, onToggleMinimizedStart }) {
+export default function Settings({ autoStart, onToggleAutostart, minimizedOnStart, onToggleMinimizedStart, explorerMenu, onToggleExplorerMenu }) {
   return (
     <div className="space-y-6">
       <h2 className="text-lg font-semibold">Settings</h2>
@@ -36,6 +36,22 @@ export default function Settings({ autoStart, onToggleAutostart, minimizedOnStar
               }`}
             >
               {minimizedOnStart ? 'On' : 'Off'}
+            </button>
+          </div>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm">Explorer context menu</p>
+              <p className="text-xs text-gray-400">Right-click menu integration</p>
+            </div>
+            <button
+              onClick={onToggleExplorerMenu}
+              className={`text-xs px-3 py-1 rounded-full font-medium transition-colors ${
+                explorerMenu
+                  ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-500'
+              }`}
+            >
+              {explorerMenu ? 'On' : 'Off'}
             </button>
           </div>
         </div>

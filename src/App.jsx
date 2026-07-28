@@ -132,6 +132,16 @@ export default function App() {
     setMinimizedOnStart(next)
   }
 
+  const handleToggleExplorerMenu = async () => {
+    if (explorerMenu) {
+      await window.sweep.removeExplorerMenu()
+      setExplorerMenu(false)
+    } else {
+      const r = await window.sweep.installExplorerMenu()
+      if (r.success) setExplorerMenu(true)
+    }
+  }
+
   const handleClean = useCallback(async () => {
     const total = items.reduce((sum, i) => sum + i.size, 0)
     const sizeLabel = total > 1073741824 ? (total / 1073741824).toFixed(1) + ' GB' : (total / 1048576).toFixed(1) + ' MB'
@@ -243,38 +253,7 @@ export default function App() {
                 ↩ Undo
               </button>
             )}
-            {pendingCount > 0 && (
-              <>
-                <button
-                  onClick={async () => {
-                    await window.sweep.deleteLargeFiles(pendingFiles)
-                    setPendingFiles([])
-                  }}
-                  className="text-xs px-3 py-1 rounded-full bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 border border-red-200 dark:border-red-800"
-                >
-                  Batch Sweep ({pendingCount})
-                </button>
-                <button onClick={() => setPendingFiles([])} className="text-xs text-gray-400 hover:text-gray-600">
-                  ✕
-                </button>
-              </>
-            )}
             <button title="Check for Updates" onClick={handleCheckUpdate} className="text-xs text-gray-400 hover:text-blue-500">🔄</button>
-            <button
-              title={explorerMenu ? 'Explorer context menu on' : 'Explorer context menu off'}
-              onClick={async () => {
-                if (explorerMenu) {
-                  await window.sweep.removeExplorerMenu()
-                  setExplorerMenu(false)
-                } else {
-                  const r = await window.sweep.installExplorerMenu()
-                  if (r.success) setExplorerMenu(true)
-                }
-              }}
-              className={`text-xs ${explorerMenu ? 'text-green-500' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
-            >
-              <span className="text-base">🖱️</span>
-            </button>
             <ThemeToggle dark={dark} onToggle={() => setDark(!dark)} />
             <button title="Minimize" onClick={() => window.sweep.minimizeWindow()} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-lg leading-none">─</button>
             <button title="Close (Esc)" onClick={() => window.sweep.closeWindow()} className="text-gray-400 hover:text-red-500 text-lg leading-none">✕</button>
@@ -319,7 +298,7 @@ export default function App() {
           {tab === 'files' && <LargeFileFinder />}
           {tab === 'startup' && <StartupManager />}
           {tab === 'duplicates' && <DuplicateFinder />}
-          {tab === 'settings' && <Settings autoStart={autoStart} onToggleAutostart={handleToggleAutostart} minimizedOnStart={minimizedOnStart} onToggleMinimizedStart={handleToggleMinimizedStart} />}
+          {tab === 'settings' && <Settings autoStart={autoStart} onToggleAutostart={handleToggleAutostart} minimizedOnStart={minimizedOnStart} onToggleMinimizedStart={handleToggleMinimizedStart} explorerMenu={explorerMenu} onToggleExplorerMenu={handleToggleExplorerMenu} />}
         </div>
         <div className="no-drag flex items-center justify-center gap-2 text-[10px] text-gray-400 pb-2">
           <span>© 2026 Dilum Saluka</span>
