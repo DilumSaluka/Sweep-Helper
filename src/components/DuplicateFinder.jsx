@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 
-export default function DuplicateFinder() {
+export default function DuplicateFinder({ onAddToBatch }) {
   const [drives, setDrives] = useState([])
   const [selectedDrive, setSelectedDrive] = useState('')
   const [groups, setGroups] = useState([])
@@ -214,6 +214,14 @@ export default function DuplicateFinder() {
             </button>
           </div>
         )}
+        {checkedCount > 0 && (
+            <button
+              onClick={() => { onAddToBatch([...checked.values()]); setChecked(new Map()) }}
+              className="px-2 py-1 rounded-lg text-xs font-medium bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 border border-blue-200 dark:border-blue-800"
+            >
+              Add to Batch
+            </button>
+          )}
         {checkedCount > 0 && (
           <button
             onClick={handleDelete}
