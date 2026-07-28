@@ -1,4 +1,4 @@
-﻿const { app, BrowserWindow, ipcMain, shell, net } = require('electron')
+const { app, BrowserWindow, ipcMain, shell, net } = require('electron')
 const path = require('path')
 const fs = require('fs')
 const os = require('os')
@@ -46,6 +46,22 @@ function saveWindowState() {
 }
 
 function createWindow() {
+  if (isSweepMode) {
+    const { execSync } = require('child_process')
+    Promise.all([
+      tempCleaner.cleanAll(),
+      recycleBin.clean(),
+      browserCache.cleanAll()
+    ]).then(() => {
+      app.isQuitting = true
+      app.quit()
+    }).catch(() => {
+      app.isQuitting = true
+      app.quit()
+    })
+    return
+  }
+
   const saved = loadWindowState()
   mainWindow = new BrowserWindow({
     width: 520,
