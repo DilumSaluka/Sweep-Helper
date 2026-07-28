@@ -1,4 +1,6 @@
-export default function Settings({ autoStart, onToggleAutostart, minimizedOnStart, onToggleMinimizedStart, explorerMenu, onToggleExplorerMenu, scheduleActive, onToggleSchedule, dark, onToggleTheme }) {
+export default function Settings({ autoStart, onToggleAutostart, minimizedOnStart, onToggleMinimizedStart, explorerMenu, onToggleExplorerMenu, scheduleActive, onToggleSchedule, dark, onToggleTheme, sysInfo, isAdmin }) {
+  const totalMem = sysInfo?.totalMem ? (sysInfo.totalMem / (1024 * 1024 * 1024)).toFixed(1) + ' GB' : '—'
+
   return (
     <div className="space-y-6">
       <h2 className="text-lg font-semibold">Settings</h2>
@@ -90,7 +92,42 @@ export default function Settings({ autoStart, onToggleAutostart, minimizedOnStar
       </div>
 
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
-        <h3 className="text-sm font-medium mb-3">About</h3>
+        <h3 className="text-sm font-medium mb-3">System</h3>
+        <div className="space-y-2 text-sm">
+          <div className="flex justify-between">
+            <span className="text-gray-400">OS</span>
+            <span>{sysInfo?.platform || '—'} {sysInfo?.release || ''}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-400">RAM</span>
+            <span>{totalMem}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-400">Hostname</span>
+            <span>{sysInfo?.hostname || '—'}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-400">Admin</span>
+            <span>{isAdmin ? 'Yes' : 'No'}</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 text-center">
+        <h3 className="text-sm font-medium mb-2">About</h3>
+        <p className="text-sm">Sweep Helper v1.5</p>
+        <p className="text-xs text-gray-400 mt-1">Clean your PC in one click</p>
+        <p className="text-xs text-gray-400 mt-2">
+          By <a href="https://github.com/DilumSaluka" className="text-blue-500 hover:underline" target="_blank">Dilum Saluka</a>
+        </p>
+        <p className="text-xs text-gray-400">MIT License</p>
+        <a
+          href="https://github.com/DilumSaluka/Sweep-Helper/issues"
+          target="_blank"
+          className="inline-block mt-3 text-xs px-4 py-1.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+        >
+          Send Feedback
+        </a>
       </div>
     </div>
   )

@@ -41,6 +41,7 @@ export default function App() {
   const [scheduleActive, setScheduleActive] = useState(false)
   const [minimizedOnStart, setMinimizedOnStart] = useState(false)
   const [explorerMenu, setExplorerMenu] = useState(false)
+  const [sysInfo, setSysInfo] = useState(null)
 
   useEffect(() => {
     const seen = localStorage.getItem('sweep-whatsnew')
@@ -89,6 +90,10 @@ export default function App() {
 
   useEffect(() => {
     window.sweep.checkExplorerMenu().then(setExplorerMenu).catch(() => {})
+  }, [])
+
+  useEffect(() => {
+    window.sweep.getSystemInfo().then(setSysInfo).catch(() => {})
   }, [])
 
   const scan = useCallback(async () => {
@@ -244,16 +249,16 @@ export default function App() {
       <div className="flex-1 flex flex-col bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-2xl overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-700">
         <div className="drag flex items-center justify-between px-5 py-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-2">
-            <span className="text-xl">🧹</span>
+            <span className="text-lg">🧹</span>
             <span className="font-semibold text-sm tracking-tight">Sweep Helper <span onClick={() => setShowAbout(true)} className="font-normal text-[10px] text-gray-400 cursor-pointer hover:text-blue-500">v1.5</span>{isAdmin && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 ml-1">👑 Admin</span>}</span>
           </div>
           <div className="no-drag flex items-center gap-2">
             {canUndo && tab === 'clean' && (
               <button onClick={handleUndo} className="text-xs px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 hover:bg-amber-200 dark:hover:bg-amber-800/60 transition-colors">
-                <span className="text-base">↩</span> Undo
+                ↩ Undo
               </button>
             )}
-            <button title="Check for Updates" onClick={handleCheckUpdate} className="text-xs text-gray-400 hover:text-blue-500"><span className="text-base">🔄</span></button>
+            <button title="Check for Updates" onClick={handleCheckUpdate} className="text-xs text-gray-400 hover:text-blue-500">🔄</button>
             <button title="Minimize" onClick={() => window.sweep.minimizeWindow()} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-lg leading-none">─</button>
             <button title="Close (Esc)" onClick={() => window.sweep.closeWindow()} className="text-gray-400 hover:text-red-500 text-lg leading-none">✕</button>
           </div>
@@ -273,7 +278,7 @@ export default function App() {
                   : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
               }`}
             >
-              <span className="text-base">{t.icon}</span> {t.label}
+              {t.icon} {t.label}
             </button>
           ))}
         </div>
@@ -297,7 +302,7 @@ export default function App() {
           {tab === 'files' && <LargeFileFinder />}
           {tab === 'startup' && <StartupManager />}
           {tab === 'duplicates' && <DuplicateFinder />}
-          {tab === 'settings' && <Settings autoStart={autoStart} onToggleAutostart={handleToggleAutostart} minimizedOnStart={minimizedOnStart} onToggleMinimizedStart={handleToggleMinimizedStart} explorerMenu={explorerMenu} onToggleExplorerMenu={handleToggleExplorerMenu} scheduleActive={scheduleActive} onToggleSchedule={handleScheduleToggle} dark={dark} onToggleTheme={() => setDark(!dark)} />}
+          {tab === 'settings' && <Settings autoStart={autoStart} onToggleAutostart={handleToggleAutostart} minimizedOnStart={minimizedOnStart} onToggleMinimizedStart={handleToggleMinimizedStart} explorerMenu={explorerMenu} onToggleExplorerMenu={handleToggleExplorerMenu} scheduleActive={scheduleActive} onToggleSchedule={handleScheduleToggle} dark={dark} onToggleTheme={() => setDark(!dark)} sysInfo={sysInfo} isAdmin={isAdmin} />}
         </div>
         <div className="no-drag flex items-center justify-center gap-2 text-[10px] text-gray-400 pb-2">
           <span>© 2026 Dilum Saluka</span>
