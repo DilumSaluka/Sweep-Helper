@@ -1,4 +1,4 @@
-﻿const fs = require('fs')
+const fs = require('fs')
 const path = require('path')
 const os = require('os')
 
@@ -106,6 +106,20 @@ exports.clean = async (subCategories) => {
           for (const e of entries) {
             try { fs.rmSync(path.join(dir.path, e), { recursive: true, force: true }) } catch {}
           }
+        }
+      }
+    } catch {}
+  }
+  return { success: true }
+}
+
+exports.cleanAll = async () => {
+  for (const dir of BROWSER_CACHE_DIRS) {
+    try {
+      if (fs.existsSync(dir.path)) {
+        const entries = fs.readdirSync(dir.path)
+        for (const e of entries) {
+          try { fs.rmSync(path.join(dir.path, e), { recursive: true, force: true }) } catch {}
         }
       }
     } catch {}

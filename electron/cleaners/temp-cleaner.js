@@ -56,3 +56,17 @@ exports.clean = async (subCategories) => {
   }
   return { success: true }
 }
+
+exports.cleanAll = async () => {
+  for (const dir of TEMP_DIRS) {
+    try {
+      if (fs.existsSync(dir.path)) {
+        const entries = fs.readdirSync(dir.path)
+        for (const entry of entries) {
+          try { fs.rmSync(path.join(dir.path, entry), { recursive: true, force: true }) } catch {}
+        }
+      }
+    } catch {}
+  }
+  return { success: true }
+}
