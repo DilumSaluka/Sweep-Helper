@@ -1,4 +1,4 @@
-export default function Settings({ autoStart, onToggleAutostart, minimizedOnStart, onToggleMinimizedStart, explorerMenu, onToggleExplorerMenu }) {
+export default function Settings({ autoStart, onToggleAutostart, minimizedOnStart, onToggleMinimizedStart, explorerMenu, onToggleExplorerMenu, scheduleActive, onToggleSchedule }) {
   return (
     <div className="space-y-6">
       <h2 className="text-lg font-semibold">Settings</h2>
@@ -59,6 +59,22 @@ export default function Settings({ autoStart, onToggleAutostart, minimizedOnStar
 
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
         <h3 className="text-sm font-medium mb-3">Cleanup</h3>
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm">Weekly schedule</p>
+            <p className="text-xs text-gray-400">Auto-clean on a weekly schedule</p>
+          </div>
+          <button
+            onClick={onToggleSchedule}
+            className={`text-xs px-3 py-1 rounded-full font-medium transition-colors ${
+              scheduleActive
+                ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
+                : 'bg-gray-100 dark:bg-gray-700 text-gray-500'
+            }`}
+          >
+            {scheduleActive ? 'On' : 'Off'}
+          </button>
+        </div>
       </div>
 
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">

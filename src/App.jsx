@@ -6,15 +6,13 @@ import UninstallManager from './components/UninstallManager'
 import LargeFileFinder from './components/LargeFileFinder'
 import StartupManager from './components/StartupManager'
 import DuplicateFinder from './components/DuplicateFinder'
-import Settings from './components/Settings'
 
 const TABS = [
   { id: 'clean', label: 'Cleaner', icon: '🧹' },
   { id: 'uninstall', label: 'Uninstall', icon: '🗑️' },
   { id: 'files', label: 'Files', icon: '📂' },
   { id: 'startup', label: 'Startup', icon: '⚡' },
-  { id: 'duplicates', label: 'Duplicates', icon: '📋' },
-  { id: 'settings', label: 'Settings', icon: '⚙️' }
+  { id: 'duplicates', label: 'Duplicates', icon: '📋' }
 ]
 
 export default function App() {
@@ -114,33 +112,10 @@ export default function App() {
       if (e.ctrlKey && e.key === 'u') { e.preventDefault(); setTab('uninstall') }
       if (e.ctrlKey && e.key === 'f') { e.preventDefault(); setTab('files') }
       if (e.ctrlKey && e.key === 's') { e.preventDefault(); setTab('startup') }
-      if (e.ctrlKey && e.key === 'g') { e.preventDefault(); setTab('settings') }
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
   }, [tab, scan])
-
-  const handleToggleAutostart = async () => {
-    const next = !autoStart
-    await window.sweep.setAutostart(next)
-    setAutoStart(next)
-  }
-
-  const handleToggleMinimizedStart = async () => {
-    const next = !minimizedOnStart
-    await window.sweep.setStartMinimized(next)
-    setMinimizedOnStart(next)
-  }
-
-  const handleToggleExplorerMenu = async () => {
-    if (explorerMenu) {
-      await window.sweep.removeExplorerMenu()
-      setExplorerMenu(false)
-    } else {
-      const r = await window.sweep.installExplorerMenu()
-      if (r.success) setExplorerMenu(true)
-    }
-  }
 
   const handleClean = useCallback(async () => {
     const total = items.reduce((sum, i) => sum + i.size, 0)
@@ -254,7 +229,44 @@ export default function App() {
               </button>
             )}
             <button title="Check for Updates" onClick={handleCheckUpdate} className="text-xs text-gray-400 hover:text-blue-500">🔄</button>
+            <button
+              title={explorerMenu ? 'Explorer context menu on' : 'Explorer context menu off'}
+              onClick={async () => {
+                if (explorerMenu) {
+                  await window.sweep.removeExplorerMenu()
+                  setExplorerMenu(false)
+                } else {
+                  const r = await window.sweep.installExplorerMenu()
+                  if (r.success) setExplorerMenu(true)
+                }
+              }}
+              className={`text-xs ${explorerMenu ? 'text-green-500' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
+            >
+              🖱️
+            </button>
             <ThemeToggle dark={dark} onToggle={() => setDark(!dark)} />
+            <button
+              title={autoStart ? 'Auto-start on' : 'Auto-start off'}
+              onClick={async () => {
+                const next = !autoStart
+                await window.sweep.setAutostart(next)
+                setAutoStart(next)
+              }}
+              className={`text-xs ${autoStart ? 'text-green-500' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
+            >
+              ⚡
+            </button>
+            <button
+              title={minimizedOnStart ? 'Start minimized on' : 'Start minimized off'}
+              onClick={async () => {
+                const next = !minimizedOnStart
+                await window.sweep.setStartMinimized(next)
+                setMinimizedOnStart(next)
+              }}
+              className={`text-xs ${minimizedOnStart ? 'text-green-500' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
+            >
+              ⊟
+            </button>
             <button title="Minimize" onClick={() => window.sweep.minimizeWindow()} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-lg leading-none">─</button>
             <button title="Close (Esc)" onClick={() => window.sweep.closeWindow()} className="text-gray-400 hover:text-red-500 text-lg leading-none">✕</button>
           </div>
@@ -267,7 +279,7 @@ export default function App() {
             <button
               key={t.id}
               onClick={() => setTab(t.id)}
-              title={t.id === 'clean' ? 'Ctrl+R to rescan' : t.id === 'uninstall' ? 'Ctrl+U' : t.id === 'files' ? 'Ctrl+F' : t.id === 'startup' ? 'Ctrl+S' : t.id === 'settings' ? 'Ctrl+G' : 'Ctrl+D'}
+              title={t.id === 'clean' ? 'Ctrl+R to rescan' : t.id === 'uninstall' ? 'Ctrl+U' : t.id === 'files' ? 'Ctrl+F' : t.id === 'startup' ? 'Ctrl+S' : 'Ctrl+D'}
               className={`flex-1 py-2 text-xs font-medium transition-colors whitespace-nowrap ${
                 tab === t.id
                   ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
@@ -298,7 +310,6 @@ export default function App() {
           {tab === 'files' && <LargeFileFinder />}
           {tab === 'startup' && <StartupManager />}
           {tab === 'duplicates' && <DuplicateFinder />}
-          {tab === 'settings' && <Settings autoStart={autoStart} onToggleAutostart={handleToggleAutostart} minimizedOnStart={minimizedOnStart} onToggleMinimizedStart={handleToggleMinimizedStart} explorerMenu={explorerMenu} onToggleExplorerMenu={handleToggleExplorerMenu} />}
         </div>
         <div className="no-drag flex items-center justify-center gap-2 text-[10px] text-gray-400 pb-2">
           <span>© 2026 Dilum Saluka</span>
