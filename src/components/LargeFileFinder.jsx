@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 
-export default function LargeFileFinder() {
+export default function LargeFileFinder({ onAddToBatch }) {
   const [drives, setDrives] = useState([])
   const [selectedDrive, setSelectedDrive] = useState('')
   const [files, setFiles] = useState([])
@@ -187,6 +187,14 @@ export default function LargeFileFinder() {
               className="px-2 py-1 rounded-lg text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700"
             >
               📋 Copy paths
+            </button>
+          )}
+          {selected.size > 0 && (
+            <button
+              onClick={() => { onAddToBatch([...selected]); setSelected(new Set()) }}
+              className="px-2 py-1 rounded-lg text-xs font-medium bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 border border-blue-200 dark:border-blue-800"
+            >
+              Add to Batch
             </button>
           )}
           {selected.size > 0 && (
