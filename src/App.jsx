@@ -39,6 +39,17 @@ export default function App() {
   const [scheduleActive, setScheduleActive] = useState(false)
   const [minimizedOnStart, setMinimizedOnStart] = useState(false)
   const [explorerMenu, setExplorerMenu] = useState(false)
+  const [pendingFiles, setPendingFiles] = useState([])
+
+  const pendingCount = pendingFiles.length
+
+  const handleAddToBatch = useCallback((files) => {
+    setPendingFiles(prev => {
+      const existing = new Set(prev)
+      files.forEach(f => existing.add(f))
+      return [...existing]
+    })
+  }, [])
 
   useEffect(() => {
     const seen = localStorage.getItem('sweep-whatsnew')
@@ -307,9 +318,9 @@ export default function App() {
             )
           )}
           {tab === 'uninstall' && <UninstallManager />}
-          {tab === 'files' && <LargeFileFinder />}
+          {tab === 'files' && <LargeFileFinder onAddToBatch={handleAddToBatch} />}
           {tab === 'startup' && <StartupManager />}
-          {tab === 'duplicates' && <DuplicateFinder />}
+          {tab === 'duplicates' && <DuplicateFinder onAddToBatch={handleAddToBatch} />}
         </div>
         <div className="no-drag flex items-center justify-center gap-2 text-[10px] text-gray-400 pb-2">
           <span>© 2026 Dilum Saluka</span>
