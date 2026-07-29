@@ -7,6 +7,8 @@ contextBridge.exposeInMainWorld('sweep', {
   listRestorePoints: () => ipcRenderer.invoke('system:listRestorePoints'),
   closeWindow: () => ipcRenderer.invoke('window:close'),
   minimizeWindow: () => ipcRenderer.invoke('window:minimize'),
+  maximizeWindow: () => ipcRenderer.invoke('window:maximize'),
+  isMaximized: () => ipcRenderer.invoke('window:isMaximized'),
   showWindow: () => ipcRenderer.invoke('window:show'),
   scanDisk: () => ipcRenderer.invoke('scan:disk'),
   cleanItems: (items) => ipcRenderer.invoke('clean:items', items),
@@ -14,6 +16,7 @@ contextBridge.exposeInMainWorld('sweep', {
   hasRestorableItems: () => ipcRenderer.invoke('safe-bin:exists'),
   listDrives: () => ipcRenderer.invoke('files:drives'),
   scanLargeFiles: (drive) => ipcRenderer.invoke('files:scan', drive),
+  deepScan: (drive) => ipcRenderer.invoke('files:deepScan', drive),
   deleteLargeFiles: (paths) => ipcRenderer.invoke('files:delete', paths),
   listUninstallApps: () => ipcRenderer.invoke('uninstall:list'),
   uninstallApp: (app) => ipcRenderer.invoke('uninstall:run', app),
@@ -39,5 +42,11 @@ contextBridge.exposeInMainWorld('sweep', {
   downloadUpdate: (url) => ipcRenderer.invoke('update:download', url),
   installUpdate: (path) => ipcRenderer.invoke('update:install', path),
   exportReport: (data) => ipcRenderer.invoke('export:report', data),
-  exportDuplicates: (groups) => ipcRenderer.invoke('export:duplicates', groups)
+  exportDuplicates: (groups) => ipcRenderer.invoke('export:duplicates', groups),
+  hunterListProcesses: () => ipcRenderer.invoke('hunter:listProcesses'),
+  hunterGetWindowAtCursor: () => ipcRenderer.invoke('hunter:getWindowAtCursor'),
+  hunterKillProcess: (pid) => ipcRenderer.invoke('hunter:killProcess', pid),
+  hunterGetUninstallInfo: (name) => ipcRenderer.invoke('hunter:getUninstallInfo', name),
+  hunterScanLeftovers: (name) => ipcRenderer.invoke('hunter:scanLeftovers', name),
+  hunterRunUninstaller: (cmd) => ipcRenderer.invoke('hunter:runUninstaller', cmd)
 })

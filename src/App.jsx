@@ -6,6 +6,8 @@ import LargeFileFinder from './components/LargeFileFinder'
 import StartupManager from './components/StartupManager'
 import DuplicateFinder from './components/DuplicateFinder'
 import Settings from './components/Settings'
+import HunterMode from './components/HunterMode'
+import LoadingScreen from './components/LoadingScreen'
 
 const TABS = [
   { id: 'clean', label: 'Cleaner', icon: '🧹' },
@@ -13,7 +15,8 @@ const TABS = [
   { id: 'files', label: 'Files', icon: '📂' },
   { id: 'startup', label: 'Startup', icon: '⚡' },
   { id: 'duplicates', label: 'Duplicates', icon: '📋' },
-  { id: 'settings', label: 'Settings', icon: '⚙️' }
+  { id: 'settings', label: 'Settings', icon: '⚙️' },
+  { id: 'hunter', label: 'Hunter', icon: '🎯' }
 ]
 
 export default function App() {
@@ -40,9 +43,10 @@ export default function App() {
   const [scheduleActive, setScheduleActive] = useState(false)
   const [minimizedOnStart, setMinimizedOnStart] = useState(false)
   const [explorerMenu, setExplorerMenu] = useState(false)
-  const [sysInfo, setSysInfo] = useState(null)
-  const [pendingFiles, setPendingFiles] = useState([])
-  const pendingCount = pendingFiles.length
+const [sysInfo, setSysInfo] = useState(null)
+const [pendingFiles, setPendingFiles] = useState([])
+const [globalLoading, setGlobalLoading] = useState(null)
+const pendingCount = pendingFiles.length
 
   useEffect(() => {
     const seen = localStorage.getItem('sweep-whatsnew')
@@ -99,6 +103,7 @@ export default function App() {
 
   const scan = useCallback(async () => {
     setScanning(true)
+    setGlobalLoading('Scanning your PC...')
     setResults(null)
     try {
       const data = await window.sweep.scanDisk()
@@ -108,6 +113,7 @@ export default function App() {
       setLastScan(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }))
     } catch {}
     setScanning(false)
+    setGlobalLoading(null)
   }, [])
 
   useEffect(() => { if (tab === 'clean') scan() }, [tab, scan])
@@ -121,6 +127,7 @@ export default function App() {
       if (e.ctrlKey && e.key === 'f') { e.preventDefault(); setTab('files') }
       if (e.ctrlKey && e.key === 's') { e.preventDefault(); setTab('startup') }
       if (e.ctrlKey && e.key === 'g') { e.preventDefault(); setTab('settings') }
+      if (e.ctrlKey && e.key === 'h') { e.preventDefault(); setTab('hunter') }
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
@@ -146,19 +153,23 @@ export default function App() {
     }
     try { await window.sweep.createRestorePoint() } catch {}
     setCleaning(true)
+    setGlobalLoading('Sweeping files...')
     const before = total
     try {
       await window.sweep.cleanItems(items)
     } catch {}
     setResults({ freed: before, count: items.reduce((s, i) => s + (i.subCategories?.length || 1), 0) })
     setCleaning(false)
+    setGlobalLoading(null)
   }, [items])
 
   const handleUndo = async () => {
+    setGlobalLoading('Restoring files...')
     try {
       await window.sweep.undoLast()
     } catch {}
     setCanUndo(false)
+    setGlobalLoading(null)
     scan()
   }
 
@@ -253,8 +264,10 @@ export default function App() {
               <>
                 <button
                   onClick={async () => {
+                    setGlobalLoading('Sweeping batch files...')
                     await window.sweep.deleteLargeFiles(pendingFiles)
                     setPendingFiles([])
+                    setGlobalLoading(null)
                   }}
                   className="text-xs px-3 py-1 rounded-full bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 border border-red-200 dark:border-red-800"
                 >
@@ -266,8 +279,9 @@ export default function App() {
               </>
             )}
             <button title="Check for Updates" onClick={handleCheckUpdate} className="text-xs text-gray-400 hover:text-blue-500">🔄</button>
-            <button title="Minimize" onClick={() => window.sweep.minimizeWindow()} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-lg leading-none">─</button>
-            <button title="Close (Esc)" onClick={() => window.sweep.closeWindow()} className="text-gray-400 hover:text-red-500 text-lg leading-none">✕</button>
+            <button title="Minimize" onClick={() => window.sweep.minimizeWindow()} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-lg leading-none w-7 h-7 flex items-center justify-center rounded hover:bg-gray-100 dark:hover:bg-gray-700">─</button>
+            <button title="Maximize" onClick={async () => { await window.sweep.maximizeWindow() }} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-lg leading-none w-7 h-7 flex items-center justify-center rounded hover:bg-gray-100 dark:hover:bg-gray-700">□</button>
+            <button title="Close (Esc)" onClick={() => window.sweep.closeWindow()} className="text-gray-400 hover:text-red-500 text-lg leading-none w-7 h-7 flex items-center justify-center rounded hover:bg-red-100 dark:hover:bg-red-900/30">✕</button>
           </div>
         </div>
 
@@ -278,7 +292,7 @@ export default function App() {
             <button
               key={t.id}
               onClick={() => setTab(t.id)}
-              title={t.id === 'clean' ? 'Ctrl+R to rescan' : t.id === 'uninstall' ? 'Ctrl+U' : t.id === 'files' ? 'Ctrl+F' : t.id === 'startup' ? 'Ctrl+S' : t.id === 'settings' ? 'Ctrl+G' : 'Ctrl+D'}
+              title={t.id === 'clean' ? 'Ctrl+R to rescan' : t.id === 'uninstall' ? 'Ctrl+U' : t.id === 'files' ? 'Ctrl+F' : t.id === 'startup' ? 'Ctrl+S' : t.id === 'settings' ? 'Ctrl+G' : t.id === 'hunter' ? 'Ctrl+H' : 'Ctrl+D'}
               className={`flex-1 py-2 text-xs font-medium transition-colors whitespace-nowrap ${
                 tab === t.id
                   ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
@@ -309,7 +323,8 @@ export default function App() {
           {tab === 'files' && <LargeFileFinder />}
           {tab === 'startup' && <StartupManager />}
           {tab === 'duplicates' && <DuplicateFinder />}
-          {tab === 'settings' && <Settings autoStart={autoStart} onToggleAutostart={handleToggleAutostart} minimizedOnStart={minimizedOnStart} onToggleMinimizedStart={handleToggleMinimizedStart} explorerMenu={explorerMenu} onToggleExplorerMenu={async () => { if (explorerMenu) { await window.sweep.removeExplorerMenu(); setExplorerMenu(false) } else { const r = await window.sweep.installExplorerMenu(); if (r.success) setExplorerMenu(true) } }} scheduleActive={scheduleActive} onToggleSchedule={handleScheduleToggle} dark={dark} onToggleTheme={() => setDark(!dark)} sysInfo={sysInfo} isAdmin={isAdmin} />}
+          {tab === 'settings' && <Settings autoStart={autoStart} onToggleAutostart={handleToggleAutostart} minimizedOnStart={minimizedOnStart} onToggleMinimizedStart={handleToggleMinimizedStart} explorerMenu={explorerMenu} onToggleExplorerMenu={async () => { if (explorerMenu) { await window.sweep.removeExplorerMenu(); setExplorerMenu(false) } else { const r = await window.sweep.installExplorerMenu(); if (r.success) setExplorerMenu(true) } }} scheduleActive={scheduleActive} onToggleSchedule={handleToggleSchedule} dark={dark} onToggleTheme={() => setDark(!dark)} sysInfo={sysInfo} isAdmin={isAdmin} />}
+          {tab === 'hunter' && <HunterMode />}
         </div>
         <div className="no-drag flex items-center justify-center gap-2 text-[10px] text-gray-400 pb-2">
           <span>© 2026 Dilum Saluka</span>
@@ -362,6 +377,8 @@ export default function App() {
           </div>
         </div>
       )}
+      {globalLoading && <LoadingScreen message={globalLoading} fullScreen />}
+
       {showAbout && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setShowAbout(false)}>
           <div className="bg-white dark:bg-gray-800 rounded-2xl px-6 py-5 shadow-2xl border border-gray-200 dark:border-gray-700 max-w-xs text-center" onClick={e => e.stopPropagation()}>

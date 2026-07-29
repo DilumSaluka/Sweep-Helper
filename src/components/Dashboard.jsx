@@ -4,6 +4,8 @@ export default function Dashboard({ items, scanning, cleaning, onClean, lastScan
   const [sysInfo, setSysInfo] = useState(null)
   const [drives, setDrives] = useState([])
   const [rpStatus, setRpStatus] = useState('')
+  const [deepScanning, setDeepScanning] = useState(false)
+  const [deepResults, setDeepResults] = useState(null)
   const canvasRef = useRef(null)
 
   useEffect(() => {
@@ -20,7 +22,7 @@ export default function Dashboard({ items, scanning, cleaning, onClean, lastScan
     const ctx = c.getContext('2d')
     const colors = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316']
     const total = drives.reduce((s, d) => s + d.total, 0)
-    const used = drives.reduce((s, d) => s + (d.total - d.free), 0)
+    const used = drives.reduce((s, d) => s + d.used, 0)
     const cx = 45, cy = 45, r = 34, lw = 12
     ctx.clearRect(0, 0, 90, 90)
     let start = -Math.PI / 2
@@ -90,20 +92,47 @@ export default function Dashboard({ items, scanning, cleaning, onClean, lastScan
             <div>
               <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Drives</p>
               {drives.map(d => {
-                const pct = d.total > 0 ? ((d.total - d.free) / d.total * 100).toFixed(0) : 0
+                const pct = d.total > 0 ? ((d.used) / d.total * 100).toFixed(0) : 0
                 return (
                   <div key={d.root} className="flex items-center gap-2 mb-1">
-                    <span className="text-xs font-medium w-6 shrink-0">{d.root}</span>
+                    <span className="text-xs font-medium w-4 shrink-0">{d.root}</span>
                     <div className="w-20 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                       <div className="h-full bg-blue-500 dark:bg-blue-400 rounded-full" style={{ width: `${pct}%` }} />
                     </div>
-                    <span className="text-[10px] text-gray-400 w-20 text-right shrink-0">{formatSize(d.free)} free</span>
+                    <span className="text-[10px] text-gray-400 w-24 text-right shrink-0">{formatSize(d.used)} / {formatSize(d.total)}</span>
                   </div>
                 )
               })}
             </div>
           </div>
-          <p className="text-[10px] text-gray-400 text-center">{drives.length} drive(s) detected</p>
+          <div className="flex items-center justify-center gap-2">
+            <p className="text-[10px] text-gray-400">{drives.length} drive(s) detected</p>
+            <span className="text-[10px] text-gray-300">·</span>
+            <button
+              onClick={async () => {
+                setDeepScanning(true)
+                setDeepResults(null)
+                const results = await window.sweep.deepScan(drives[0].root)
+                setDeepResults(results)
+                setDeepScanning(false)
+              }}
+              disabled={deepScanning}
+              className="text-[10px] text-blue-500 hover:text-blue-600 disabled:opacity-50"
+            >
+              {deepScanning ? 'Scanning...' : '🔍 Deep Scan'}
+            </button>
+          </div>
+          {deepResults && deepResults.length > 0 && (
+            <div className="mt-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg p-2 max-h-32 overflow-y-auto">
+              <p className="text-[10px] font-medium text-gray-500 mb-1">Top folders on {drives[0].root}</p>
+              {deepResults.map((f, i) => (
+                <div key={i} className="flex justify-between text-[10px] text-gray-400 py-0.5">
+                  <span className="truncate flex-1">{f.Name}</span>
+                  <span className="shrink-0 ml-2">{formatSize(f.Size)}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 

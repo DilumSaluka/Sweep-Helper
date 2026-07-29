@@ -14,7 +14,8 @@ async function listDrives() {
         resolve(arr.map(d => ({
           root: d.Root.replace('\\', ''),
           used: d.Used,
-          free: d.Free
+          free: d.Free,
+          total: d.Used + d.Free
         })))
       } catch { resolve([]) }
     })

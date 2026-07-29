@@ -16,6 +16,7 @@ let windowStateSaveTimer = null
 
 app.isQuitting = false
 
+const isSweepMode = process.argv.includes('--sweep')
 const gotTheLock = app.requestSingleInstanceLock()
 if (!gotTheLock) {
   app.quit()
@@ -64,11 +65,13 @@ function createWindow() {
 
   const saved = loadWindowState()
   mainWindow = new BrowserWindow({
-    width: 520,
-    height: 680,
+    width: 680,
+    height: 720,
+    minWidth: 520,
+    minHeight: 480,
     x: saved.x,
     y: saved.y,
-    resizable: false,
+    resizable: true,
     frame: false,
     backgroundColor: '#111827',
     webPreferences: {
@@ -141,8 +144,15 @@ app.on('window-all-closed', () => {
 
 ipcMain.handle('window:close', () => mainWindow?.close())
 ipcMain.handle('window:minimize', () => mainWindow?.minimize())
-ipcMain.handle('window:show', () => mainWindow?.show())
+ipcMain.handle('window:maximize', () => {
+  if (mainWindow?.isMaximized()) {
+    mainWindow.unmaximize()
+  } else {
+    mainWindow?.maximize()
+  }
+})
 ipcMain.handle('window:isMaximized', () => mainWindow?.isMaximized())
+ipcMain.handle('window:show', () => mainWindow?.show())
 
 ipcMain.handle('scan:disk', async () => {
   const all = await Promise.allSettled([
@@ -209,6 +219,23 @@ ipcMain.handle('safe-bin:exists', async () => {
 
 ipcMain.handle('files:drives', async () => {
   return largeFileFinder.listDrives()
+})
+
+ipcMain.handle('files:deepScan', async (_event, driveRoot) => {
+  try {
+    const script = `$path = "${driveRoot}\\"; Get-ChildItem -Path $path -Directory -ErrorAction SilentlyContinue | ForEach-Object { $size = (Get-ChildItem -Path $_.FullName -Recurse -File -ErrorAction SilentlyContinue | Measure-Object -Property Length -Sum).Sum; [PSCustomObject]@{ Name = $_.Name; Size = if ($size) { $size } else { 0 }; ItemCount = (Get-ChildItem -Path $_.FullName -Recurse -ErrorAction SilentlyContinue | Measure-Object).Count } } | Sort-Object -Property Size -Descending | Select-Object -First 30 | ConvertTo-Json -Compress`
+    const { execFile } = require('child_process')
+    const ps = process.env.SystemRoot + '\\System32\\WindowsPowerShell\\v1.0\\powershell.exe'
+    return new Promise((resolve) => {
+      execFile(ps, ['-NoProfile', '-Command', script], { maxBuffer: 1024 * 1024, timeout: 30000 }, (err, stdout) => {
+        if (err) { resolve([]); return }
+        try {
+          const data = JSON.parse(stdout.trim())
+          resolve(Array.isArray(data) ? data : [data])
+        } catch { resolve([]) }
+      })
+    })
+  } catch { return [] }
 })
 
 ipcMain.handle('files:scan', async (_event, driveRoot) => {
@@ -430,4 +457,86 @@ ipcMain.handle('update:install', async (_event, installerPath) => {
     require('child_process').execFile(installerPath, ['/S'])
   } catch (e) { console.error('Failed to run installer:', e.message) }
   app.quit()
+})
+
+ipcMain.handle('hunter:listProcesses', async () => {
+  try {
+    const ps = require('child_process').execSync(
+      `powershell -NoProfile -Command "Get-Process | Where-Object { $_.MainWindowTitle -ne '' } | Select-Object Id, ProcessName, @{N='WindowTitle';E={$_.MainWindowTitle}}, @{N='StartTime';E={$_.StartTime.ToString('yyyy-MM-dd HH:mm:ss')}} | ConvertTo-Json -Compress"`,
+      { timeout: 5000 }
+    ).toString().trim()
+    return JSON.parse(ps)
+  } catch { return [] }
+})
+
+ipcMain.handle('hunter:getWindowAtCursor', async () => {
+  try {
+    const result = require('child_process').execSync(
+      'powershell -NoProfile -Command "Add-Type -AssemblyName System.Windows.Forms; $pt = [Windows.Forms.Cursor]::Position; Write-Output \\"$($pt.X),$($pt.Y)\\""',
+      { timeout: 3000 }
+    ).toString().trim()
+    const [x, y] = result.split(',').map(Number)
+    const windowInfo = require('child_process').execSync(
+      `powershell -NoProfile -Command "$sig = @\\'[DllImport(\\"user32.dll\\")] public static extern IntPtr WindowFromPoint(int x, int y); [DllImport(\\"user32.dll\\")] public static extern uint GetWindowThreadProcessId(IntPtr hwnd, out int pid);\\'@; Add-Type -MemberDefinition $sig -Name Win32 -Namespace Win32; $hwnd = [Win32.Win32]::WindowFromPoint($x,$y); $pid = 0; [Win32.Win32]::GetWindowThreadProcessId($hwnd, [ref]$pid); Write-Output \\"$pid\\""`,
+      { timeout: 5000 }
+    ).toString().trim()
+    const pid = parseInt(windowInfo)
+    if (!pid) return null
+    const proc = require('child_process').execSync(
+      `powershell "Get-Process -Id ${pid} | Select-Object Id, ProcessName, @{N='WindowTitle';E={$_.MainWindowTitle}}, @{N='StartTime';E={$_.StartTime.ToString('yyyy-MM-dd HH:mm:ss')}} | ConvertTo-Json"`,
+      { timeout: 5000 }
+    ).toString().trim()
+    return JSON.parse(proc)
+  } catch { return null }
+})
+
+ipcMain.handle('hunter:killProcess', async (_event, pid) => {
+  try {
+    require('child_process').execSync(`taskkill /PID ${pid} /F`, { timeout: 3000 })
+    return { success: true }
+  } catch (e) { return { success: false, error: e.message } }
+})
+
+ipcMain.handle('hunter:getUninstallInfo', async (_event, processName) => {
+  try {
+    const info = require('child_process').execSync(
+      `powershell "Get-ItemProperty HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\* | Where-Object { $_.DisplayName -match '${processName.replace(/[^a-zA-Z0-9 ]/g, '')}' } | Select-Object DisplayName, UninstallString, DisplayVersion, Publisher, InstallLocation | ConvertTo-Json -Compress"`,
+      { timeout: 5000 }
+    ).toString().trim()
+    if (!info || info === 'null') return null
+    return JSON.parse(info)
+  } catch { return null }
+})
+
+ipcMain.handle('hunter:scanLeftovers', async (_event, appName) => {
+  const leftovers = { files: [], registry: [] }
+  const sanitized = appName.replace(/[^a-zA-Z0-9 ]/g, '').trim()
+  if (!sanitized) return leftovers
+  try {
+    const fileDirs = require('child_process').execSync(
+      `powershell "Get-ChildItem \\"$env:LOCALAPPDATA\\",\\"$env:APPDATA\\" -Directory -ErrorAction SilentlyContinue | Where-Object { $_.Name -like \\"*${sanitized}*\\" } | Select-Object FullName | ConvertTo-Json -Compress"`,
+      { timeout: 5000 }
+    ).toString().trim()
+    if (fileDirs && fileDirs !== 'null') {
+      leftovers.files = JSON.parse(fileDirs)
+    }
+  } catch {}
+  try {
+    const regKeys = require('child_process').execSync(
+      `powershell "Get-ChildItem \\"HKCU:\\Software\\",\\"HKLM:\\Software\\" -ErrorAction SilentlyContinue | Where-Object { $_.PSChildName -like \\"*${sanitized}*\\" } | Select-Object @{N='Path';E={$_.PSPath}} | ConvertTo-Json -Compress"`,
+      { timeout: 5000 }
+    ).toString().trim()
+    if (regKeys && regKeys !== 'null') {
+      leftovers.registry = JSON.parse(regKeys)
+    }
+  } catch {}
+  return leftovers
+})
+
+ipcMain.handle('hunter:runUninstaller', async (_event, uninstallString) => {
+  try {
+    const cmd = uninstallString.replace(/^"(.+)"$/, '$1').trim()
+    require('child_process').exec(cmd, { timeout: 30000 })
+    return { success: true }
+  } catch (e) { return { success: false, error: e.message } }
 })
