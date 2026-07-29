@@ -8,6 +8,7 @@ import DuplicateFinder from './components/DuplicateFinder'
 import Settings from './components/Settings'
 import HunterMode from './components/HunterMode'
 import LoadingScreen from './components/LoadingScreen'
+import ErrorBoundary from './components/ErrorBoundary'
 
 const TABS = [
   { id: 'clean', label: 'Cleaner', icon: '🧹' },
@@ -46,6 +47,8 @@ export default function App() {
 const [sysInfo, setSysInfo] = useState(null)
 const [pendingFiles, setPendingFiles] = useState([])
 const [globalLoading, setGlobalLoading] = useState(null)
+const [initialLoading, setInitialLoading] = useState(true)
+const [pulseLoading, setPulseLoading] = useState('')
 const pendingCount = pendingFiles.length
 
   useEffect(() => {
@@ -62,10 +65,6 @@ const pendingCount = pendingFiles.length
 
   useEffect(() => {
     localStorage.setItem('sweep-dark', JSON.stringify(dark))
-  }, [dark])
-
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', dark)
   }, [dark])
 
   useEffect(() => {
@@ -104,6 +103,7 @@ const pendingCount = pendingFiles.length
   const scan = useCallback(async () => {
     setScanning(true)
     setGlobalLoading('Scanning your PC...')
+    setPulseLoading('Analyzing system...')
     setResults(null)
     try {
       const data = await window.sweep.scanDisk()
@@ -113,10 +113,19 @@ const pendingCount = pendingFiles.length
       setLastScan(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }))
     } catch {}
     setScanning(false)
+    setInitialLoading(false)
+    setPulseLoading('')
     setGlobalLoading(null)
   }, [])
 
-  useEffect(() => { if (tab === 'clean') scan() }, [tab, scan])
+  useEffect(() => {
+    scan()
+    const timeout = setTimeout(() => {
+      setInitialLoading(false)
+      setGlobalLoading(null)
+    }, 20000)
+    return () => clearTimeout(timeout)
+  }, [scan])
 
   useEffect(() => {
     const handler = (e) => {
@@ -197,6 +206,14 @@ const pendingCount = pendingFiles.length
     scan()
   }
 
+  const handleAddToBatch = (files) => {
+    setPendingFiles(prev => {
+      const set = new Set(prev)
+      files.forEach(f => set.add(f))
+      return [...set]
+    })
+  }
+
   const handleCheckUpdate = async () => {
     try {
       const info = await window.sweep.checkUpdate()
@@ -247,7 +264,11 @@ const pendingCount = pendingFiles.length
   )
 
   return (
-    <div className={`h-screen flex flex-col ${dark ? 'dark' : ''}`}>
+    <>
+      {(initialLoading || globalLoading) && (
+        <LoadingScreen message={globalLoading || 'Starting up...'} fullScreen pulse={initialLoading} />
+      )}
+      <div className={`h-screen flex flex-col ${dark ? 'dark' : ''}`}>
       <div className="flex-1 flex flex-col bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-2xl overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-700">
         <div className="drag flex items-center justify-between px-5 py-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-2">
@@ -316,14 +337,22 @@ const pendingCount = pendingFiles.length
                 onClean={handleClean}
                 lastScan={lastScan}
                 onRestorePoints={handleViewRestorePoints}
+                onQuickClean={async () => {
+                  const quickItems = items.filter(i => i.id === 'temp' || i.id === 'recycle')
+                  if (quickItems.length === 0) return
+                  setGlobalLoading('Quick cleaning...')
+                  try { await window.sweep.cleanItems(quickItems) } catch {}
+                  setGlobalLoading(null)
+                  scan()
+                }}
               />
             )
           )}
           {tab === 'uninstall' && <UninstallManager />}
-          {tab === 'files' && <LargeFileFinder />}
+          {tab === 'files' && <LargeFileFinder onAddToBatch={handleAddToBatch} />}
           {tab === 'startup' && <StartupManager />}
-          {tab === 'duplicates' && <DuplicateFinder />}
-          {tab === 'settings' && <Settings autoStart={autoStart} onToggleAutostart={handleToggleAutostart} minimizedOnStart={minimizedOnStart} onToggleMinimizedStart={handleToggleMinimizedStart} explorerMenu={explorerMenu} onToggleExplorerMenu={async () => { if (explorerMenu) { await window.sweep.removeExplorerMenu(); setExplorerMenu(false) } else { const r = await window.sweep.installExplorerMenu(); if (r.success) setExplorerMenu(true) } }} scheduleActive={scheduleActive} onToggleSchedule={handleToggleSchedule} dark={dark} onToggleTheme={() => setDark(!dark)} sysInfo={sysInfo} isAdmin={isAdmin} />}
+          {tab === 'duplicates' && <DuplicateFinder onAddToBatch={handleAddToBatch} />}
+          {tab === 'settings' && <ErrorBoundary><Settings autoStart={autoStart} onToggleAutostart={handleToggleAutostart} minimizedOnStart={minimizedOnStart} onToggleMinimizedStart={handleToggleMinimizedStart} explorerMenu={explorerMenu} onToggleExplorerMenu={async () => { if (explorerMenu) { await window.sweep.removeExplorerMenu(); setExplorerMenu(false) } else { const r = await window.sweep.installExplorerMenu(); if (r.success) setExplorerMenu(true) } }} scheduleActive={scheduleActive} onToggleSchedule={handleScheduleToggle} dark={dark} onToggleTheme={() => setDark(!dark)} sysInfo={sysInfo} isAdmin={isAdmin} /></ErrorBoundary>}
           {tab === 'hunter' && <HunterMode />}
         </div>
         <div className="no-drag flex items-center justify-center gap-2 text-[10px] text-gray-400 pb-2">
@@ -377,8 +406,6 @@ const pendingCount = pendingFiles.length
           </div>
         </div>
       )}
-      {globalLoading && <LoadingScreen message={globalLoading} fullScreen />}
-
       {showAbout && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setShowAbout(false)}>
           <div className="bg-white dark:bg-gray-800 rounded-2xl px-6 py-5 shadow-2xl border border-gray-200 dark:border-gray-700 max-w-xs text-center" onClick={e => e.stopPropagation()}>
@@ -392,5 +419,6 @@ const pendingCount = pendingFiles.length
         </div>
       )}
     </div>
+    </>
   )
 }
