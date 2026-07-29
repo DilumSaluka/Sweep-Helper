@@ -1,6 +1,21 @@
 ﻿import { useState, useEffect, useRef } from 'react'
 
-export default function Dashboard({ items, scanning, cleaning, onClean, lastScan, onRestorePoints }) {
+function calcHealth(items, sysInfo, drives) {
+  let score = 100
+  if (!items || !sysInfo || !drives) return { score: 0, label: 'Scanning...' }
+  const freeMem = sysInfo.freeMem / sysInfo.totalMem
+  if (freeMem < 0.15) score -= 25
+  else if (freeMem < 0.25) score -= 10
+  const cleanable = items.filter(i => i.size > 0).length
+  if (cleanable > 0) score -= 15
+  if (cleanable > 3) score -= 10
+  const crowdedDrives = drives.filter(d => d.free / d.total < 0.1).length
+  score -= crowdedDrives * 10
+  const label = score >= 80 ? 'Great' : score >= 50 ? 'Fair' : score >= 30 ? 'Poor' : 'Critical'
+  return { score, label }
+}
+
+export default function Dashboard({ items, scanning, cleaning, onClean, lastScan, onRestorePoints, onQuickClean }) {
   const [sysInfo, setSysInfo] = useState(null)
   const [drives, setDrives] = useState([])
   const [rpStatus, setRpStatus] = useState('')
@@ -42,6 +57,7 @@ export default function Dashboard({ items, scanning, cleaning, onClean, lastScan
     ctx.fillText(formatSize(used), cx, cy)
   }, [drives])
 
+  const health = calcHealth(items, sysInfo, drives)
   const totalSize = items.reduce((sum, i) => sum + i.size, 0)
   const hasItems = items.some(i => i.size > 0)
 
@@ -70,6 +86,23 @@ export default function Dashboard({ items, scanning, cleaning, onClean, lastScan
             {formatSize(drives.reduce((sum, d) => sum + d.free, 0))} free on disk
           </p>
         )}
+      </div>
+
+      <div className="flex items-center gap-2 mb-2">
+        <div className="flex-1 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2 flex items-center gap-2">
+          <span className="text-xs">PC Health</span>
+          <span className={`text-xs font-bold ${
+            health.score >= 80 ? 'text-green-500' : health.score >= 50 ? 'text-amber-500' : 'text-red-500'
+          }`}>{health.score}/100</span>
+          <span className="text-[10px] text-gray-400">{health.label}</span>
+        </div>
+        <button
+          onClick={onQuickClean}
+          disabled={cleaning}
+          className="px-3 py-2 rounded-xl text-xs font-medium bg-green-600 hover:bg-green-700 text-white disabled:opacity-50 flex items-center gap-1"
+        >
+          ⚡ Quick Clean
+        </button>
       </div>
 
       <div className="flex-1 space-y-2">
