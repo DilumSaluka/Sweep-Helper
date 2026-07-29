@@ -40,13 +40,15 @@ export default function App() {
   const [scheduleActive, setScheduleActive] = useState(false)
   const [minimizedOnStart, setMinimizedOnStart] = useState(false)
   const [explorerMenu, setExplorerMenu] = useState(false)
-const [sysInfo, setSysInfo] = useState(null)
+  const [sysInfo, setSysInfo] = useState(null)
+  const [pendingFiles, setPendingFiles] = useState([])
+  const pendingCount = pendingFiles.length
 
   useEffect(() => {
     const seen = localStorage.getItem('sweep-whatsnew')
-    if (seen !== 'v1.5.0') {
+    if (seen !== 'v1.6.0') {
       setShowWhatsNew(true)
-      localStorage.setItem('sweep-whatsnew', 'v1.5.0')
+      localStorage.setItem('sweep-whatsnew', 'v1.6.0')
     }
   }, [])
 
@@ -239,7 +241,7 @@ const [sysInfo, setSysInfo] = useState(null)
         <div className="drag flex items-center justify-between px-5 py-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-2">
             <span className="text-xl">🧹</span>
-            <span className="font-semibold text-sm tracking-tight">Sweep Helper <span onClick={() => setShowAbout(true)} className="font-normal text-[10px] text-gray-400 cursor-pointer hover:text-blue-500">v1.5</span>{isAdmin && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 ml-1">👑 Admin</span>}</span>
+            <span className="font-semibold text-sm tracking-tight">Sweep Helper <span onClick={() => setShowAbout(true)} className="font-normal text-[10px] text-gray-400 cursor-pointer hover:text-blue-500">v1.6</span>{isAdmin && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 ml-1">👑 Admin</span>}</span>
           </div>
           <div className="no-drag flex items-center gap-2">
             {canUndo && tab === 'clean' && (
@@ -324,23 +326,14 @@ const [sysInfo, setSysInfo] = useState(null)
       {showWhatsNew && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setShowWhatsNew(false)}>
           <div className="bg-white dark:bg-gray-800 rounded-2xl px-6 py-5 shadow-2xl border border-gray-200 dark:border-gray-700 max-w-sm text-left" onClick={e => e.stopPropagation()}>
-            <p className="font-bold text-sm mb-2">🎉 What's New in v1.5</p>
+            <p className="font-bold text-sm mb-2">🎉 What's New in v1.6</p>
             <ul className="text-xs text-gray-400 space-y-1">
-              <li>🔄 Silent auto-update (no install wizard)</li>
-              <li>🛡️ View system restore points dialog</li>
-              <li>📅 Schedule weekly automatic cleanup</li>
-              <li>💾 Disk donut chart in Dashboard</li>
-              <li>⌨️ Ctrl+D/U/F/S keyboard shortcuts</li>
-              <li>👑 Admin badge in title bar</li>
-              <li>📁 File counts in cleaner subcategories</li>
-              <li>💾 Save & restore window position</li>
-              <li>⏹️ Cancel scan button for large files</li>
-              <li>📅 Keep Newest button in Duplicates</li>
-              <li>🖱️ Right-click context menu on duplicates</li>
-              <li>🔄 Shift+click select entire group</li>
-              <li>⊟ Start minimized to tray option</li>
-              <li>🖱️ Explorer right-click context menu</li>
-              <li>🛡️ Manual restore point button</li>
+              <li>⚙️ Settings page with all preferences</li>
+              <li>🖥️ System info in Settings (OS, RAM, hostname)</li>
+              <li>📋 Batch select files across tabs</li>
+              <li>🖱️ Consistent icon sizes throughout</li>
+              <li>🔧 Scheduled cleanup now works (--sweep)</li>
+              <li>🐛 App no longer crashes on launch</li>
             </ul>
             <button onClick={() => setShowWhatsNew(false)} className="mt-4 w-full px-4 py-1.5 text-xs font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700">Got it!</button>
           </div>
@@ -373,7 +366,7 @@ const [sysInfo, setSysInfo] = useState(null)
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setShowAbout(false)}>
           <div className="bg-white dark:bg-gray-800 rounded-2xl px-6 py-5 shadow-2xl border border-gray-200 dark:border-gray-700 max-w-xs text-center" onClick={e => e.stopPropagation()}>
             <p className="text-2xl mb-2">🧹</p>
-            <p className="font-bold text-sm">Sweep Helper v1.5</p>
+            <p className="font-bold text-sm">Sweep Helper v1.6</p>
             <p className="text-xs text-gray-400 mt-1">Clean your PC in one click</p>
             <p className="text-xs text-gray-400 mt-3">By <a href="https://github.com/DilumSaluka" className="text-blue-500 hover:underline" target="_blank">Dilum Saluka</a></p>
             <p className="text-xs text-gray-400">MIT License</p>

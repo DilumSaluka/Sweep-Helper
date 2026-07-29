@@ -16,9 +16,9 @@ Get the latest installer from the **[Releases page](https://github.com/DilumSalu
 
 | Version | Download | Size |
 |---------|----------|------|
-| **v1.4 (latest)** | [Sweep Helper Setup 1.4.0.exe](https://github.com/DilumSaluka/Sweep-Helper/releases/download/v1.4/Sweep.Helper.Setup.1.4.0.exe) | ~80 MB |
-| **v1.4 (portable)** | [Sweep-Helper-Portable-1.4.0.zip](https://github.com/DilumSaluka/Sweep-Helper/releases/download/v1.4/Sweep-Helper-Portable-1.4.0.zip) | ~80 MB |
-| v1.3 | [Release page](https://github.com/DilumSaluka/Sweep-Helper/releases/tag/v1.3) | — |
+| **v1.6 (latest)** | [Sweep Helper Setup 1.6.0.exe](https://github.com/DilumSaluka/Sweep-Helper/releases/download/v1.6.0/Sweep.Helper.Setup.1.6.0.exe) | ~81 MB |
+| **v1.6 (portable)** | [Sweep-Helper-Portable-1.6.0.zip](https://github.com/DilumSaluka/Sweep-Helper/releases/download/v1.6.0/Sweep-Helper-Portable-1.6.0.zip) | ~120 MB |
+| v1.5 | [Release page](https://github.com/DilumSaluka/Sweep-Helper/releases/tag/v1.5) | — |
 
 > Windows 10/11 only. No admin required for portable version.
 
@@ -55,6 +55,22 @@ Get the latest installer from the **[Releases page](https://github.com/DilumSalu
 | 📝 **Search Counts** | See "X of Y" search result counts |
 | 🎉 **What's New Dialog** | What's New dialog on first launch after update |
 | 🎨 **Visual Polish** | Better layout, spacing, and consistent design throughout |
+| 🔇 **Silent Auto-Update** | Installs in background with no install wizard popup |
+| 🛡️ **Restore Points Viewer** | View and create system restore points from Dashboard |
+| 📅 **Scheduled Cleanup** | Weekly automatic cleanup via Task Scheduler |
+| 📊 **Disk Donut Chart** | Visual disk usage breakdown in Dashboard |
+| ⌨️ **Keyboard Shortcuts** | Ctrl+D/U/F/S/G for quick tab switching |
+| 👑 **Admin Badge** | Shows admin status in title bar |
+| 📁 **File Counts** | Shows file count per cleaner subcategory |
+| 💾 **Window Position** | Saves and restores window position between sessions |
+| ⏹️ **Cancel Scan** | Cancel large file scan mid-operation |
+| 📅 **Keep Newest** | Auto-select newest file in each duplicate group |
+| 🖱️ **Context Menu** | Right-click on duplicates for actions |
+| 🔄 **Shift+Click** | Select entire duplicate group with Shift+click |
+| ⊟ **Start Minimized** | Launch app to system tray |
+| 🖱️ **Explorer Menu** | Right-click files in Explorer to sweep |
+| ⚙️ **Settings Page** | Dedicated settings tab with all preferences |
+| 📋 **Batch Select** | Select files across tabs and sweep at once |
 
 ---
 
